@@ -1,7 +1,6 @@
 import { Outlet, useLocation } from 'react-router-dom'
 import Header from '@/components/Header/Header'
 import Footer from '@/components/Footer/Footer'
-import '@/styles/global.scss'
 import './MainLayout.scss'
 
 // Rotas que não exibem header e footer

@@ -1,7 +1,8 @@
-// Estilos globais do projeto. Carregado uma única vez pelo MainLayout.
+// Estilos globais do projeto. Carregado uma única vez pelo main.jsx.
 // Os mixins de abstracts/ já chegam injetados pelo vite.config.js.
 
 @use 'variables';
+@use 'forms';
 
 // ---------- Reset ----------
 

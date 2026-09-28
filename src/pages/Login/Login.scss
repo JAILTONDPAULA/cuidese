@@ -1,0 +1,105 @@
+.login {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	&__form {
+		@include card;
+		width: 100%;
+		max-width: 400px;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-lg);
+	}
+
+	// Título do sistema
+	&__header {
+		text-align: center;
+	}
+
+	&__title {
+		color: var(--primary-color);
+	}
+
+	&__subtitle {
+		margin-top: var(--space-xs);
+		color: var(--text-muted-color);
+	}
+
+	// E-mail e senha
+	&__credenciais {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-md);
+	}
+
+	&__btn-entrar {
+		padding: var(--space-sm) var(--space-md);
+		border: none;
+		border-radius: var(--border-radius);
+		background: var(--primary-color);
+		color: var(--primary-contrast-color);
+		font-weight: 600;
+
+		&:hover {
+			background: var(--primary-600);
+		}
+	}
+
+	// Google
+	&__google {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-md);
+	}
+
+	// Texto entre duas linhas: ——— ou acesse... ———
+	&__divisor {
+		display: flex;
+		align-items: center;
+		gap: var(--space-sm);
+		font-size: var(--font-size-sm);
+		color: var(--text-muted-color);
+		white-space: nowrap;
+
+		&::before,
+		&::after {
+			content: '';
+			flex: 1;
+			height: 1px;
+			background: var(--surface-border);
+		}
+	}
+
+	&__btn-google {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: var(--space-sm);
+		padding: var(--space-sm) var(--space-md);
+		border: 1px solid var(--surface-300);
+		border-radius: var(--border-radius);
+		background: var(--surface-0);
+		font-weight: 600;
+
+		&:hover {
+			background: var(--surface-100);
+		}
+	}
+
+	// Reset de senha
+	&__reset {
+		text-align: center;
+		font-size: var(--font-size-sm);
+	}
+
+	// Rodapé do form
+	&__footer {
+		padding-top: var(--space-md);
+		border-top: 1px solid var(--surface-border);
+		text-align: center;
+		font-size: var(--font-size-sm);
+		color: var(--text-muted-color);
+	}
+}

@@ -1,0 +1,72 @@
+// Campo de formulário padrão. Uso:
+// <label className="field">
+// 	<span className="field__label">E-mail</span>
+// 	<input type="email" required />
+// 	<small className="field__erro">Informe um e-mail válido</small>
+// </label>
+
+.field {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-xs);
+
+	&__label {
+		font-size: var(--font-size-sm);
+		font-weight: 600;
+		color: var(--text-color);
+	}
+
+	input,
+	textarea,
+	select {
+		width: 100%;
+		padding: var(--space-sm) var(--space-md);
+		border: 1px solid var(--surface-300);
+		border-radius: var(--border-radius);
+		background: var(--surface-0);
+		transition: border-color 0.15s;
+
+		&::placeholder {
+			color: var(--surface-500);
+		}
+
+		&:hover {
+			border-color: var(--surface-400);
+		}
+
+		&:focus-visible {
+			outline: none;
+			border-color: var(--primary-color);
+		}
+
+		&:disabled {
+			background: var(--surface-100);
+			color: var(--text-muted-color);
+			cursor: not-allowed;
+		}
+
+		// :user-invalid só ativa depois que o usuário interage com o campo
+		// (sai dele ou tenta enviar o form), diferente de :invalid, que já
+		// deixaria tudo vermelho ao abrir a tela.
+		&:user-invalid {
+			border-color: var(--red-500);
+		}
+	}
+
+	// Mensagem de erro: escondida até o campo ficar inválido
+	&__erro {
+		display: none;
+		font-size: var(--font-size-sm);
+		color: var(--red-600);
+	}
+
+	&:has(:user-invalid) {
+		.field__label {
+			color: var(--red-600);
+		}
+
+		.field__erro {
+			display: block;
+		}
+	}
+}
