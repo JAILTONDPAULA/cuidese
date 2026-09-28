@@ -19,11 +19,13 @@
 	}
 
 	&__title {
-		color: var(--primary-color);
+		display: flex;
+		justify-content: center;
 	}
 
 	&__subtitle {
-		margin-top: var(--space-xs);
+		margin-top: var(--space-md);
+		text-wrap: balance;
 		color: var(--text-muted-color);
 	}
 
@@ -89,9 +91,18 @@
 	}
 
 	// Reset de senha
+	// Esqueci minha senha • Cadastre-se
 	&__reset {
-		text-align: center;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		align-items: center;
+		gap: var(--space-sm);
 		font-size: var(--font-size-sm);
+	}
+
+	&__reset-separador {
+		color: var(--surface-400);
 	}
 
 	// Rodapé do form

@@ -1,0 +1,28 @@
+.logo {
+	display: inline-flex;
+	align-items: center;
+	gap: calc(var(--logo-tamanho) * 0.25);
+
+	&--coluna {
+		flex-direction: column;
+		gap: calc(var(--logo-tamanho) * 0.15);
+	}
+
+	&__simbolo {
+		display: block;
+		flex-shrink: 0;
+	}
+
+	// "Cuide" em azul e "se" em verde: cuide-se
+	&__texto {
+		font-size: calc(var(--logo-tamanho) * 0.6);
+		font-weight: 800;
+		line-height: 1;
+		letter-spacing: -0.02em;
+		color: var(--primary-700);
+	}
+
+	&__texto-se {
+		color: var(--tertiary-500);
+	}
+}

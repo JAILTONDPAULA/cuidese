@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import GoogleIcon from '@/components/icons/GoogleIcon'
+import Logo from '@/components/Logo/Logo'
 import './Login.scss'
 
 function Login() {
@@ -14,8 +15,10 @@ function Login() {
 		<div className="login">
 			<form className="login__form" onSubmit={handleSubmit}>
 				<header className="login__header">
-					<h1 className="login__title">Cuidese</h1>
-					<p className="login__subtitle">Entre para relatar seus sintomas</p>
+					<h1 className="login__title">
+						<Logo tamanho={44} />
+					</h1>
+					<p className="login__subtitle">Sua saúde, do sintoma ao cuidado certo</p>
 				</header>
 
 				<section className="login__credenciais">
@@ -47,6 +50,8 @@ function Login() {
 
 				<section className="login__reset">
 					<Link to="/recuperar-senha">Esqueci minha senha</Link>
+					<span className="login__reset-separador" aria-hidden="true">•</span>
+					<Link to="/cadastro">Cadastre-se</Link>
 				</section>
 
 				<footer className="login__footer">© {new Date().getFullYear()} Cuidese</footer>
