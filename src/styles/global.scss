@@ -1,0 +1,95 @@
+// Estilos globais do projeto. Carregado uma única vez pelo MainLayout.
+// Os mixins de abstracts/ já chegam injetados pelo vite.config.js.
+
+@use 'variables';
+
+// ---------- Reset ----------
+
+*,
+*::before,
+*::after {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+// Impede o iOS de aumentar a fonte sozinho ao girar o celular
+html {
+	-webkit-text-size-adjust: 100%;
+	text-size-adjust: 100%;
+}
+
+// Sem padding, os marcadores ficariam fora do container
+ul,
+ol {
+	list-style: none;
+}
+
+img,
+picture,
+svg,
+video {
+	display: block;
+	max-width: 100%;
+}
+
+// Campos de formulário não herdam a fonte da página por padrão
+input,
+button,
+textarea,
+select {
+	font: inherit;
+	color: inherit;
+}
+
+button {
+	cursor: pointer;
+}
+
+textarea {
+	resize: vertical;
+}
+
+// Quebra palavras/links longos em vez de estourar a largura no celular
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	overflow-wrap: break-word;
+}
+
+// ---------- Base ----------
+
+body {
+	font-family: var(--font-family);
+	font-size: var(--font-size-base);
+	line-height: 1.5;
+	color: var(--text-color);
+	background: var(--surface-ground);
+	-webkit-font-smoothing: antialiased;
+}
+
+#root {
+	min-height: 100svh;
+}
+
+h1,
+h2,
+h3 {
+	line-height: 1.2;
+}
+
+h1 {
+	font-size: var(--font-size-xl);
+}
+
+h2 {
+	font-size: var(--font-size-lg);
+}
+
+a {
+	color: var(--primary-color);
+}

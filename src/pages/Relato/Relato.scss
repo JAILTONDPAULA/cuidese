@@ -1,0 +1,7 @@
+// Mixins globais disponíveis sem import
+.relato {
+	@include card;
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-md);
+}

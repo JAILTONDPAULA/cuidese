@@ -1,0 +1,36 @@
+.header {
+	height: var(--header-height);
+	background: var(--surface-card);
+	border-bottom: 1px solid var(--surface-border);
+
+	&__inner {
+		@include container;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	&__logo {
+		font-size: var(--font-size-lg);
+		font-weight: 700;
+		color: var(--primary-color);
+		text-decoration: none;
+	}
+
+	&__nav {
+		display: flex;
+		gap: var(--space-md);
+
+		a {
+			color: var(--text-muted-color);
+			text-decoration: none;
+
+			// NavLink adiciona a classe "active" no link da rota atual
+			&.active {
+				color: var(--primary-color);
+				font-weight: 600;
+			}
+		}
+	}
+}

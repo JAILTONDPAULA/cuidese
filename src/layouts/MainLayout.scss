@@ -1,0 +1,11 @@
+.main-layout {
+	display: flex;
+	flex-direction: column;
+	min-height: 100svh;
+
+	&__content {
+		@include container;
+		flex: 1;
+		padding-block: var(--space-lg);
+	}
+}
