@@ -2,6 +2,7 @@
 // <label className="field">
 // 	<span className="field__label">E-mail</span>
 // 	<input type="email" required />
+// 	<small className="field__dica">Texto de ajuda (opcional)</small>
 // 	<small className="field__erro">Informe um e-mail válido</small>
 // </label>
 
@@ -53,6 +54,33 @@
 		}
 	}
 
+	// Mesma altura para todos, inclusive date (que tem o ícone de calendário) e select
+	input,
+	select {
+		min-height: 2.75rem;
+	}
+
+	// Select sem a seta nativa (que muda em cada sistema), com uma seta própria
+	select {
+		appearance: none;
+		padding-right: calc(var(--space-md) * 2.5);
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%236c757d' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+		background-repeat: no-repeat;
+		background-position: right var(--space-md) center;
+	}
+
+	// Select com a opção vazia ("Selecione") e data ainda não preenchida ficam com cor de placeholder
+	select:has(option[value='']:checked),
+	input[type='date']:invalid:not(:focus) {
+		color: var(--surface-500);
+	}
+
+	// Texto de ajuda: some quando a mensagem de erro aparece
+	&__dica {
+		font-size: var(--font-size-sm);
+		color: var(--text-muted-color);
+	}
+
 	// Mensagem de erro: escondida até o campo ficar inválido
 	&__erro {
 		display: none;
@@ -63,6 +91,10 @@
 	&:has(:user-invalid) {
 		.field__label {
 			color: var(--red-600);
+		}
+
+		.field__dica {
+			display: none;
 		}
 
 		.field__erro {

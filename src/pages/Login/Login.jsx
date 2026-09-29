@@ -12,16 +12,16 @@ function Login() {
 	function handleGoogleLogin() {}
 
 	return (
-		<div className="login">
-			<form className="login__form" onSubmit={handleSubmit}>
-				<header className="login__header">
-					<h1 className="login__title">
+		<div className="auth">
+			<form className="auth__card" onSubmit={handleSubmit}>
+				<header className="auth__header">
+					<h1 className="auth__title">
 						<Logo tamanho={44} />
 					</h1>
-					<p className="login__subtitle">Sua saúde, do sintoma ao cuidado certo</p>
+					<p className="auth__subtitle">Sua saúde, do sintoma ao cuidado certo</p>
 				</header>
 
-				<section className="login__credenciais">
+				<section className="auth__campos">
 					<label className="field">
 						<span className="field__label">E-mail</span>
 						<input type="email" name="email" autoComplete="email" placeholder="seu@email.com" required />
@@ -34,7 +34,7 @@ function Login() {
 						<small className="field__erro">Informe sua senha</small>
 					</label>
 
-					<button type="submit" className="login__btn-entrar">
+					<button type="submit" className="btn btn--primario">
 						Entrar
 					</button>
 				</section>
@@ -42,19 +42,19 @@ function Login() {
 				<section className="login__google">
 					<p className="login__divisor">ou acesse com sua conta Google</p>
 
-					<button type="button" className="login__btn-google" onClick={handleGoogleLogin}>
+					<button type="button" className="btn btn--contorno" onClick={handleGoogleLogin}>
 						<GoogleIcon />
 						Entrar com Google
 					</button>
 				</section>
 
-				<section className="login__reset">
+				<section className="auth__links">
 					<Link to="/recuperar-senha">Esqueci minha senha</Link>
-					<span className="login__reset-separador" aria-hidden="true">•</span>
+					<span className="auth__links-separador" aria-hidden="true">•</span>
 					<Link to="/cadastro">Cadastre-se</Link>
 				</section>
 
-				<footer className="login__footer">© {new Date().getFullYear()} Cuidese</footer>
+				<footer className="auth__footer">© {new Date().getFullYear()} Cuidese</footer>
 			</form>
 		</div>
 	)

@@ -3,6 +3,7 @@ import MainLayout from '@/layouts/MainLayout'
 import Relato from '@/pages/Relato/Relato'
 import Historico from '@/pages/Historico/Historico'
 import Login from '@/pages/Login/Login'
+import Cadastro from '@/pages/Cadastro/Cadastro'
 import NotFound from '@/pages/NotFound/NotFound'
 
 // Cada rota filha de MainLayout é renderizada dentro do template principal.
@@ -15,6 +16,7 @@ const router = createBrowserRouter([
 			{ index: true, element: <Relato /> },
 			{ path: 'historico', element: <Historico /> },
 			{ path: 'login', element: <Login /> },
+			{ path: 'cadastro', element: <Cadastro /> },
 			{ path: '*', element: <NotFound /> },
 		],
 	},

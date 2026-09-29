@@ -1,0 +1,79 @@
+// Estrutura das telas de acesso (login, cadastro, recuperar senha):
+// card centralizado com logo, conteúdo, links e rodapé.
+
+// Partials usados via @use no global.scss não recebem a injeção do vite.config.js
+@use 'abstracts' as *;
+
+.auth {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding-block: var(--space-lg);
+
+	&__card {
+		@include card;
+		width: 100%;
+		max-width: 400px;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-lg);
+	}
+
+	// Logo e subtítulo
+	&__header {
+		text-align: center;
+	}
+
+	&__title {
+		display: flex;
+		justify-content: center;
+	}
+
+	&__subtitle {
+		margin-top: var(--space-md);
+		text-wrap: balance;
+		color: var(--text-muted-color);
+	}
+
+	// Campos do formulário
+	&__campos {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-md);
+	}
+
+	// Dois campos lado a lado; empilha no celular
+	&__linha {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: var(--space-md);
+
+		@include mobile {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	// Links pequenos: Esqueci minha senha • Cadastre-se
+	&__links {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		align-items: center;
+		gap: var(--space-sm);
+		font-size: var(--font-size-sm);
+		color: var(--text-muted-color);
+	}
+
+	&__links-separador {
+		color: var(--surface-400);
+	}
+
+	&__footer {
+		padding-top: var(--space-md);
+		border-top: 1px solid var(--surface-border);
+		text-align: center;
+		font-size: var(--font-size-sm);
+		color: var(--text-muted-color);
+	}
+}

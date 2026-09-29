@@ -5,7 +5,7 @@ import Footer from '@/components/Footer/Footer'
 import './MainLayout.scss'
 
 // Rotas que não exibem header e footer
-const ROTAS_SEM_HEADER_FOOTER = ['/login']
+const ROTAS_SEM_HEADER_FOOTER = ['/login', '/cadastro']
 
 // Template principal (equivalente ao layout Blade "main").
 // Toda tela declarada como filha desta rota é renderizada no lugar do <Outlet />.
