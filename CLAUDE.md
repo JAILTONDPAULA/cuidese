@@ -42,6 +42,7 @@ Plataformas-alvo do build: Web, iOS, Android (gerando APK).
 ## Convenções de código
 
 - **README por componente**: todo componente criado em `src/components/<Nome>/` deve ter um `README.md` no mesmo diretório, explicando como usá-lo (props/parâmetros, exemplos e cuidados). Ao alterar a API de um componente, atualizar o README junto.
+- **Helpers**: ficam em `src/helpers/<Nome>Helper/<Nome>Helper.js` (uma pasta por helper, ex.: `src/helpers/CPFHelper/CPFHelper.js`), como classe com métodos estáticos exportada por padrão. Cada pasta deve ter um `README.md` explicando o helper e cada método (parâmetros, retorno, exemplos e cuidados). Ao alterar um helper, atualizar o README junto.
 
 ## Pontos em aberto (definir em conversas futuras)
 

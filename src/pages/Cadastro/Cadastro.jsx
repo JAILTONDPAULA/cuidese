@@ -25,7 +25,14 @@ function Cadastro() {
 				<section className="auth__campos">
 					<label className="field">
 						<span className="field__label">Nome completo</span>
-						<input type="text" name="name" autoComplete="name" placeholder="Seu nome completo" required />
+						<input
+							type="text"
+							name="name"
+							autoComplete="name"
+							placeholder="Seu nome completo"
+							required
+							onChange={(e) => e.target.value = e.target.value.toUpperCase()}
+						/>
 						<small className="field__erro">Informe seu nome completo</small>
 					</label>
 
