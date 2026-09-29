@@ -6,13 +6,19 @@ import '@/styles/global.scss'
 import router from '@/routes'
 import Toaster from '@/components/Toast/Toaster'
 import { toast } from '@/components/Toast/toast'
+import Dialog from '@/components/Dialog/Dialog'
+import { dialog } from '@/components/Dialog/dialogStore'
 
-// Em desenvolvimento, expõe toast() no console do navegador para testes
-if (import.meta.env.DEV) window.toast = toast
+// Em desenvolvimento, expõe toast() e dialog() no console do navegador para testes
+if (import.meta.env.DEV) {
+	window.toast = toast
+	window.dialog = dialog
+}
 
 createRoot(document.getElementById('root')).render(
 	<StrictMode>
 		<RouterProvider router={router} />
+		<Dialog />
 		<Toaster />
 	</StrictMode>,
 )

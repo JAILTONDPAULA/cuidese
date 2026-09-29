@@ -1,0 +1,180 @@
+// Trava a rolagem da página enquanto houver algum dialog aberto
+body.dialog-aberto {
+	overflow: hidden;
+}
+
+// Fundo escuro e transparente cobrindo a tela toda.
+// Cada dialog tem o seu; os de cima ficam na frente pela ordem no DOM.
+.dialog {
+	position: fixed;
+	inset: 0;
+	z-index: 900; // abaixo dos toasts (1000), para eles continuarem visíveis
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+	padding: 10vh var(--space-md) var(--space-md);
+	background: rgba(15, 23, 42, 0.5);
+	animation: dialog-fundo-entrada 0.25s ease-out both;
+
+	// Dialogs empilhados escurecem menos, para o fundo não ficar preto
+	& ~ & {
+		background: rgba(15, 23, 42, 0.25);
+	}
+
+	&--saindo {
+		animation: dialog-fundo-saida 0.25s ease-in forwards;
+
+		.dialog__form {
+			animation: dialog-form-saida 0.25s ease-in forwards;
+		}
+	}
+
+	&__form {
+		--dialog-cor: var(--primary-500);
+		--dialog-cor-claro: var(--primary-400);
+		--dialog-cor-escuro: var(--primary-600);
+
+		width: auto;
+		min-width: min(400px, 100%); // 400px, mas nunca maior que a tela no celular
+		max-width: 520px;
+		max-height: calc(90vh - var(--space-md));
+		display: flex;
+		flex-direction: column;
+		background: var(--surface-0);
+		border-radius: var(--border-radius-lg);
+		box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+		outline: none;
+		animation: dialog-form-entrada 0.25s ease-out both;
+
+		// Tipos: mesmas cores do Toast. Claro/escuro formam o gradiente do selo do ícone;
+		// --dialog-cor também fica disponível para o futuro botão de ação.
+		&--alerta {
+			--dialog-cor: var(--secondary-500);
+			--dialog-cor-claro: var(--secondary-400);
+			--dialog-cor-escuro: var(--secondary-600);
+		}
+
+		&--erro {
+			--dialog-cor: var(--red-500);
+			--dialog-cor-claro: var(--red-400);
+			--dialog-cor-escuro: var(--red-600);
+		}
+
+		&--sucesso {
+			--dialog-cor: var(--tertiary-500);
+			--dialog-cor-claro: var(--tertiary-400);
+			--dialog-cor-escuro: var(--tertiary-600);
+		}
+	}
+
+	// Título e X alinhados
+	&__header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--space-md);
+		padding: var(--space-md) var(--space-lg);
+		border-bottom: 1px solid var(--surface-border);
+	}
+
+	&__titulo {
+		display: flex;
+		align-items: center;
+		gap: var(--space-sm);
+		font-size: var(--font-size-lg);
+		color: var(--text-color);
+	}
+
+	// Selo do tipo: quadrado arredondado com gradiente e ícone branco
+	&__icone {
+		flex-shrink: 0;
+		display: grid;
+		place-items: center;
+		width: 32px;
+		height: 32px;
+		border-radius: var(--border-radius-lg);
+		background: linear-gradient(135deg, var(--dialog-cor-claro), var(--dialog-cor-escuro));
+		box-shadow: 0 2px 6px color-mix(in srgb, var(--dialog-cor) 40%, transparent);
+		color: #ffffff;
+		font-size: var(--font-size-base);
+	}
+
+	&__fechar-icone {
+		flex-shrink: 0;
+		display: grid;
+		place-items: center;
+		width: 32px;
+		height: 32px;
+		border: none;
+		border-radius: var(--border-radius);
+		background: transparent;
+		color: var(--text-muted-color);
+		font-size: var(--font-size-lg);
+
+		&:hover {
+			color: var(--dialog-cor);
+			background: var(--surface-100);
+		}
+	}
+
+	// Conteúdo externo; rola se passar da altura disponível
+	&__body {
+		flex: 1;
+		min-height: 0;
+		overflow-y: auto;
+		padding: var(--space-lg);
+		overflow-wrap: anywhere;
+	}
+
+	&__footer {
+		display: flex;
+		justify-content: flex-end;
+		gap: var(--space-sm);
+		padding: var(--space-md) var(--space-lg);
+		border-top: 1px solid var(--surface-border);
+	}
+}
+
+@keyframes dialog-fundo-entrada {
+	from {
+		opacity: 0;
+	}
+}
+
+@keyframes dialog-fundo-saida {
+	to {
+		opacity: 0;
+	}
+}
+
+// Form desce do topo ao abrir...
+@keyframes dialog-form-entrada {
+	from {
+		opacity: 0;
+		translate: 0 -40px;
+	}
+}
+
+// ...e sobe ao fechar
+@keyframes dialog-form-saida {
+	to {
+		opacity: 0;
+		translate: 0 -40px;
+	}
+}
+
+// Sem deslocamento para quem desativou animações; mantém só o fade
+// (a animação precisa existir para o dialog ser removido ao terminar)
+@media (prefers-reduced-motion: reduce) {
+	@keyframes dialog-form-entrada {
+		from {
+			opacity: 0;
+		}
+	}
+
+	@keyframes dialog-form-saida {
+		to {
+			opacity: 0;
+		}
+	}
+}
