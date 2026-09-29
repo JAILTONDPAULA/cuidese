@@ -1,4 +1,5 @@
 import { Outlet, useLocation } from 'react-router-dom'
+import Background from '@/components/Background/Background'
 import Header from '@/components/Header/Header'
 import Footer from '@/components/Footer/Footer'
 import './MainLayout.scss'
@@ -14,6 +15,8 @@ function MainLayout() {
 
 	return (
 		<div className="main-layout">
+			<Background />
+
 			{exibirHeaderFooter && <Header />}
 
 			<main className="main-layout__content">

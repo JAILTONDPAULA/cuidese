@@ -25,19 +25,25 @@ function desenharSimbolo(canvas, tamanho) {
 	ctx.strokeStyle = cor('--tertiary-500')
 	ctx.stroke()
 
-	// Coração
+	// Coração: as curvas descem "cheias" até a ponta, e o contorno arredondado
+	// (lineJoin round) da mesma cor suaviza a ponta e o encontro dos lóbulos.
 	const x = 47
-	const y = 31
-	const w = 42
-	const h = 40
+	const y = 33
+	const w = 38
+	const h = 35
 	ctx.beginPath()
-	ctx.moveTo(x, y + h * 0.3)
+	ctx.moveTo(x, y + h * 0.28)
 	ctx.bezierCurveTo(x, y, x - w / 2, y, x - w / 2, y + h * 0.3)
-	ctx.bezierCurveTo(x - w / 2, y + h * 0.6, x, y + h * 0.8, x, y + h)
-	ctx.bezierCurveTo(x, y + h * 0.8, x + w / 2, y + h * 0.6, x + w / 2, y + h * 0.3)
-	ctx.bezierCurveTo(x + w / 2, y, x, y, x, y + h * 0.3)
+	ctx.bezierCurveTo(x - w / 2, y + h * 0.62, x - w * 0.12, y + h * 0.82, x, y + h)
+	ctx.bezierCurveTo(x + w * 0.12, y + h * 0.82, x + w / 2, y + h * 0.62, x + w / 2, y + h * 0.3)
+	ctx.bezierCurveTo(x + w / 2, y, x, y, x, y + h * 0.28)
+	ctx.closePath()
 	ctx.fillStyle = cor('--primary-500')
 	ctx.fill()
+	ctx.lineWidth = 6
+	ctx.lineJoin = 'round'
+	ctx.strokeStyle = cor('--primary-500')
+	ctx.stroke()
 
 	// Ponto na abertura do C
 	ctx.beginPath()

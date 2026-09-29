@@ -1,0 +1,67 @@
+.background {
+	position: fixed;
+	inset: 0;
+	z-index: -1;
+	overflow: hidden;
+	pointer-events: none;
+	user-select: none;
+
+	// Retângulo arredondado girado 45°: o eixo vai do canto inferior direito ao superior esquerdo.
+	// transform-origin à direita faz a pílula "crescer" a partir do canto inferior direito.
+	&__pilula {
+		position: absolute;
+		border-radius: 999px;
+		opacity: 0.22;
+		transform-origin: right center;
+		rotate: 45deg;
+		animation:
+			background-entrada 1s ease-out both,
+			background-flutuar 6s ease-in-out infinite alternate;
+	}
+
+	&__circulo {
+		position: absolute;
+		border-radius: 50%;
+		opacity: 0.35;
+		animation:
+			background-surgir 0.8s ease-out both,
+			background-balancar 5s ease-in-out infinite alternate;
+	}
+}
+
+// Círculos surgem crescendo a partir do centro deles
+@keyframes background-surgir {
+	from {
+		scale: 0;
+		opacity: 0;
+	}
+}
+
+// Nasce do canto inferior direito
+@keyframes background-entrada {
+	from {
+		scale: 0 1;
+		opacity: 0;
+	}
+}
+
+// Vai e volta na diagonal, para cima e para a esquerda
+@keyframes background-flutuar {
+	to {
+		translate: -24px -24px;
+	}
+}
+
+@keyframes background-balancar {
+	to {
+		translate: 0 16px;
+	}
+}
+
+// Respeita quem desativou animações no sistema
+@media (prefers-reduced-motion: reduce) {
+	.background__pilula,
+	.background__circulo {
+		animation: none;
+	}
+}
