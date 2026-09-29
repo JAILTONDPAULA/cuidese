@@ -39,6 +39,10 @@ Plataformas-alvo do build: Web, iOS, Android (gerando APK).
 - **Recomendação**: sugestão de clínica/médico, derivada do diagnóstico atual e do histórico.
 - **Compartilhamento**: link gerado a partir de um relato/diagnóstico, com escopo total ou parcial, consumido fora do app (WhatsApp/Telegram/e-mail).
 
+## Convenções de código
+
+- **README por componente**: todo componente criado em `src/components/<Nome>/` deve ter um `README.md` no mesmo diretório, explicando como usá-lo (props/parâmetros, exemplos e cuidados). Ao alterar a API de um componente, atualizar o README junto.
+
 ## Pontos em aberto (definir em conversas futuras)
 
 - Provedor de IA para o resumo dos sintomas.

@@ -1,0 +1,106 @@
+// Pilha de toasts no canto superior direito
+.toaster {
+	position: fixed;
+	top: var(--space-md);
+	right: var(--space-md);
+	z-index: 1000;
+	width: min(360px, calc(100vw - var(--space-md) * 2));
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-sm);
+	pointer-events: none; // a área vazia não bloqueia cliques na página
+}
+
+.toast {
+	--toast-cor: var(--primary-500);
+
+	display: flex;
+	align-items: flex-start;
+	gap: var(--space-sm);
+	padding: var(--space-sm) var(--space-sm) var(--space-sm) var(--space-md);
+	background: var(--surface-0);
+	border-left: 4px solid var(--toast-cor);
+	border-radius: var(--border-radius);
+	box-shadow:
+		0 8px 24px rgba(0, 0, 0, 0.12),
+		0 2px 6px rgba(0, 0, 0, 0.08);
+	pointer-events: auto;
+	animation: toast-entrada 0.3s ease-out both;
+
+	// Tipos: só trocam a cor da borda e do hover do botão fechar
+	&--alerta {
+		--toast-cor: var(--secondary-500);
+	}
+
+	&--erro {
+		--toast-cor: var(--red-500);
+	}
+
+	&--sucesso {
+		--toast-cor: var(--tertiary-500);
+	}
+
+	&--saindo {
+		animation: toast-saida 0.25s ease-in forwards;
+	}
+
+	// Texto ou HTML; rola se passar do limite de altura
+	&__conteudo {
+		flex: 1;
+		min-width: 0;
+		max-height: 200px;
+		overflow-y: auto;
+		padding-block: 2px;
+		font-size: var(--font-size-sm);
+		overflow-wrap: anywhere;
+	}
+
+	&__fechar {
+		flex-shrink: 0;
+		display: grid;
+		place-items: center;
+		width: 24px;
+		height: 24px;
+		border: none;
+		border-radius: var(--border-radius);
+		background: transparent;
+		color: var(--text-muted-color);
+
+		&:hover {
+			color: var(--toast-cor);
+			background: var(--surface-100);
+		}
+	}
+}
+
+// Entra da direita para a esquerda
+@keyframes toast-entrada {
+	from {
+		opacity: 0;
+		translate: 100% 0;
+	}
+}
+
+// Sai da esquerda para a direita
+@keyframes toast-saida {
+	to {
+		opacity: 0;
+		translate: 100% 0;
+	}
+}
+
+// Sem deslocamento para quem desativou animações; mantém só o fade
+// (a animação precisa existir para o toast ser removido ao terminar)
+@media (prefers-reduced-motion: reduce) {
+	@keyframes toast-entrada {
+		from {
+			opacity: 0;
+		}
+	}
+
+	@keyframes toast-saida {
+		to {
+			opacity: 0;
+		}
+	}
+}
