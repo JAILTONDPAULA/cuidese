@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Logo from '@/components/Logo/Logo'
 import { toast } from '@/components/Toast/toast'
 import CPFHelper from '@/helpers/CPFHelper/CPFHelper'
+import TelefoneHelper from '@/helpers/TelefoneHelper/TelefoneHelper'
 import { useOcultarPreload } from '@/components/Preload/preloadStore'
 
 // Hoje no formato AAAA-MM-DD, para impedir data de nascimento no futuro
@@ -31,6 +32,37 @@ function Cadastro() {
 		event.target.setCustomValidity(invalido ? 'CPF inválido' : '')
 		setCpf(mascarado)
 		setCpfInvalido(invalido)
+	}
+
+	// Telefone controlado, como o CPF. Com 10 dígitos não dá para saber se terminou (fixo) ou se
+	// ainda falta um (celular); por isso o erro aparece ao completar 11 dígitos ou ao sair do campo.
+	const [telefone, setTelefone] = useState('')
+	const [telefoneErro, setTelefoneErro] = useState('')
+	const telefoneAvisado = useRef('') // último valor que gerou toast, para não repetir
+
+	function atualizarTelefone(input, valor, mostrarErro) {
+		const motivo = valor ? (TelefoneHelper.motivoInvalido(valor) ?? '') : ''
+
+		// Bloqueia o envio do form enquanto for inválido, mesmo sem mostrar o erro ainda
+		input.setCustomValidity(motivo)
+
+		// Se o erro já está na tela, acompanha a digitação (some ao corrigir)
+		if (mostrarErro || telefoneErro) setTelefoneErro(motivo)
+
+		if (mostrarErro && motivo && valor !== telefoneAvisado.current) {
+			toast(motivo, { tipo: 'erro', temporario: true })
+			telefoneAvisado.current = valor
+		}
+	}
+
+	function handleTelefoneChange(event) {
+		const mascarado = TelefoneHelper.mascarar(event.target.value)
+		setTelefone(mascarado)
+		atualizarTelefone(event.target, mascarado, TelefoneHelper.tipo(mascarado) === 'celular')
+	}
+
+	function handleTelefoneBlur(event) {
+		atualizarTelefone(event.target, telefone, true)
 	}
 
 	// Envio e validação do e-mail ainda não definidos
@@ -62,20 +94,38 @@ function Cadastro() {
 						<small className="field__erro">Informe seu nome completo</small>
 					</label>
 
-					<label className={`field${cpfInvalido ? ' field--erro' : ''}`}>
-						<span className="field__label">CPF</span>
-						<input
-							type="text"
-							name="cpf"
-							inputMode="numeric"
-							placeholder="000.000.000-00"
-							pattern="\d{3}\.\d{3}\.\d{3}-\d{2}"
-							value={cpf}
-							onChange={handleCpfChange}
-							required
-						/>
-						<small className="field__erro">Informe um CPF válido</small>
-					</label>
+					<div className="auth__linha">
+						<label className={`field${cpfInvalido ? ' field--erro' : ''}`}>
+							<span className="field__label">CPF</span>
+							<input
+								type="text"
+								name="cpf"
+								inputMode="numeric"
+								placeholder="000.000.000-00"
+								pattern="\d{3}\.\d{3}\.\d{3}-\d{2}"
+								value={cpf}
+								onChange={handleCpfChange}
+								required
+							/>
+							<small className="field__erro">Informe um CPF válido</small>
+						</label>
+
+						<label className={`field${telefoneErro ? ' field--erro' : ''}`}>
+							<span className="field__label">Telefone</span>
+							<input
+								type="tel"
+								name="telefone"
+								autoComplete="tel-national"
+								placeholder="(00) 0 0000-0000"
+								pattern="\(\d{2}\) (9 )?\d{4}-\d{4}"
+								value={telefone}
+								onChange={handleTelefoneChange}
+								onBlur={handleTelefoneBlur}
+								required
+							/>
+							<small className="field__erro">{telefoneErro || 'Informe um telefone válido'}</small>
+						</label>
+					</div>
 
 					<label className="field">
 						<span className="field__label">E-mail</span>
