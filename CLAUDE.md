@@ -43,6 +43,8 @@ Plataformas-alvo do build: Web, iOS, Android (gerando APK).
 
 - **README por componente**: todo componente criado em `src/components/<Nome>/` deve ter um `README.md` no mesmo diretório, explicando como usá-lo (props/parâmetros, exemplos e cuidados). Ao alterar a API de um componente, atualizar o README junto.
 - **Helpers**: ficam em `src/helpers/<Nome>Helper/<Nome>Helper.js` (uma pasta por helper, ex.: `src/helpers/CPFHelper/CPFHelper.js`), como classe com métodos estáticos exportada por padrão. Cada pasta deve ter um `README.md` explicando o helper e cada método (parâmetros, retorno, exemplos e cuidados). Ao alterar um helper, atualizar o README junto.
+- **Requisições**: toda requisição HTTP passa pelo `FetchHelper` (`src/helpers/FetchHelper/`), que controla preload, toast de erro (corpo da API exibido puro, texto ou HTML) e formato do retorno. As páginas não chamam `fetch` nem o `FetchHelper` direto: usam classes por domínio em `src/api/<Dominio>Api.js` (ex.: `UsuarioApi`), com métodos estáticos que já sabem URL/método e devolvem a Promise do `FetchHelper`; a página trata o retorno. Ao criar/alterar uma classe, atualizar a tabela em `src/api/README.md`. URL base em `VITE_API_URL` (`.env`).
+- **Preload**: toda página chama `useOcultarPreload()` no topo do componente; requisições do `FetchHelper` mantêm o preload visível até terminarem (contador).
 
 ## Pontos em aberto (definir em conversas futuras)
 

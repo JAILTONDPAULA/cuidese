@@ -9,12 +9,14 @@ import { toast } from '@/components/Toast/toast'
 import Dialog from '@/components/Dialog/Dialog'
 import { dialog } from '@/components/Dialog/dialogStore'
 import { preload } from '@/components/Preload/preloadStore'
+import FetchHelper from '@/helpers/FetchHelper/FetchHelper'
 
-// Em desenvolvimento, expõe toast(), dialog() e preload no console do navegador para testes
+// Em desenvolvimento, expõe toast(), dialog(), preload e FetchHelper no console do navegador para testes
 if (import.meta.env.DEV) {
 	window.toast = toast
 	window.dialog = dialog
 	window.preload = preload
+	window.FetchHelper = FetchHelper
 }
 
 createRoot(document.getElementById('root')).render(

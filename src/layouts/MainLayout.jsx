@@ -20,7 +20,7 @@ function MainLayout() {
 	// useLayoutEffect roda antes dos useEffect das páginas, então o "mostrar" daqui
 	// sempre acontece antes do "ocultar" delas.
 	useLayoutEffect(() => {
-		preload.mostrar()
+		preload.iniciarPagina()
 	}, [pathname])
 
 	return (

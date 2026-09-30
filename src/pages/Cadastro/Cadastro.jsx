@@ -11,7 +11,7 @@ const HOJE = new Date().toISOString().slice(0, 10)
 // Primeira etapa do cadastro: dados pessoais, sem senha.
 // Os "name" dos campos seguem o model User da API Laravel.
 function Cadastro() {
-	// useOcultarPreload()
+	useOcultarPreload()
 
 	// CPF controlado: o valor exibido vem sempre do estado, já com máscara
 	const [cpf, setCpf] = useState('')
