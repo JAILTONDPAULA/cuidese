@@ -1,9 +1,12 @@
 import { Link } from 'react-router-dom'
 import GoogleIcon from '@/components/icons/GoogleIcon'
 import Logo from '@/components/Logo/Logo'
+import { useOcultarPreload } from '@/components/Preload/preloadStore'
 import './Login.scss'
 
 function Login() {
+	useOcultarPreload()
+
 	// Provedor de autenticação ainda não definido (ver CLAUDE.md > Pontos em aberto)
 	function handleSubmit(event) {
 		event.preventDefault()

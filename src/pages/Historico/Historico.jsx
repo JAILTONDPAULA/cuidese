@@ -1,4 +1,8 @@
+import { useOcultarPreload } from '@/components/Preload/preloadStore'
+
 function Historico() {
+	useOcultarPreload()
+
 	return (
 		<section>
 			<h1>Histórico</h1>

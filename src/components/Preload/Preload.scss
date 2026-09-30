@@ -1,0 +1,106 @@
+// Trava a rolagem da página enquanto o preload está na tela
+body.preload-ativo {
+	overflow: hidden;
+}
+
+// Tela inteira, fundo padrão do app. Fica acima dos dialogs (900) e abaixo dos toasts (1000),
+// para um erro de requisição avisado por toast continuar visível.
+.preload {
+	position: fixed;
+	inset: 0;
+	z-index: 950;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--surface-ground);
+	isolation: isolate; // o <Background /> (z-index -1) fica atrás do conteúdo, mas dentro do preload
+
+	&--saindo {
+		animation: preload-saida 0.3s ease-in forwards;
+	}
+
+	&__conteudo {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--space-lg);
+	}
+
+	// Três bolinhas cinzas; uma por vez cresce e ganha uma cor da marca
+	&__bolinhas {
+		display: flex;
+		align-items: center;
+		gap: var(--space-sm);
+		height: 24px; // espaço para a bolinha crescida, sem empurrar o texto
+
+		span {
+			width: 12px;
+			height: 12px;
+			border-radius: 50%;
+			background: var(--surface-300);
+			animation: preload-bolinha 1.2s ease-in-out infinite;
+
+			// Cada uma com sua cor e começando 0,4s depois da anterior
+			&:nth-child(1) {
+				--bolinha-cor: var(--primary-500);
+			}
+
+			&:nth-child(2) {
+				--bolinha-cor: var(--secondary-500);
+				animation-delay: 0.4s;
+			}
+
+			&:nth-child(3) {
+				--bolinha-cor: var(--tertiary-500);
+				animation-delay: 0.8s;
+			}
+		}
+	}
+
+	// Texto piscando
+	&__texto {
+		font-weight: 600;
+		color: var(--text-muted-color);
+		animation: preload-piscar 1s ease-in-out infinite alternate;
+	}
+}
+
+// Cresce e ganha a cor no primeiro terço do ciclo; o resto do tempo fica cinza e pequena,
+// enquanto as outras duas fazem a vez delas
+@keyframes preload-bolinha {
+	0%,
+	66%,
+	100% {
+		scale: 1;
+		background: var(--surface-300);
+	}
+
+	20% {
+		scale: 1.8;
+		background: var(--bolinha-cor);
+	}
+}
+
+@keyframes preload-piscar {
+	to {
+		opacity: 0.3;
+	}
+}
+
+@keyframes preload-saida {
+	to {
+		opacity: 0;
+	}
+}
+
+// Para quem desativou animações: bolinhas mais lentas e texto sem piscar
+// (a saída continua, porque o preload só desmonta quando ela termina)
+@media (prefers-reduced-motion: reduce) {
+	.preload__bolinhas span {
+		animation-duration: 3s;
+	}
+
+	.preload__texto {
+		animation: none;
+	}
+}

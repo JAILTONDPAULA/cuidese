@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import Logo from '@/components/Logo/Logo'
 import { toast } from '@/components/Toast/toast'
 import CPFHelper from '@/helpers/CPFHelper/CPFHelper'
+import { useOcultarPreload } from '@/components/Preload/preloadStore'
 
 // Hoje no formato AAAA-MM-DD, para impedir data de nascimento no futuro
 const HOJE = new Date().toISOString().slice(0, 10)
@@ -10,6 +11,8 @@ const HOJE = new Date().toISOString().slice(0, 10)
 // Primeira etapa do cadastro: dados pessoais, sem senha.
 // Os "name" dos campos seguem o model User da API Laravel.
 function Cadastro() {
+	// useOcultarPreload()
+
 	// CPF controlado: o valor exibido vem sempre do estado, já com máscara
 	const [cpf, setCpf] = useState('')
 	const [cpfInvalido, setCpfInvalido] = useState(false)

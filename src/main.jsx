@@ -8,11 +8,13 @@ import Toaster from '@/components/Toast/Toaster'
 import { toast } from '@/components/Toast/toast'
 import Dialog from '@/components/Dialog/Dialog'
 import { dialog } from '@/components/Dialog/dialogStore'
+import { preload } from '@/components/Preload/preloadStore'
 
-// Em desenvolvimento, expõe toast() e dialog() no console do navegador para testes
+// Em desenvolvimento, expõe toast(), dialog() e preload no console do navegador para testes
 if (import.meta.env.DEV) {
 	window.toast = toast
 	window.dialog = dialog
+	window.preload = preload
 }
 
 createRoot(document.getElementById('root')).render(
