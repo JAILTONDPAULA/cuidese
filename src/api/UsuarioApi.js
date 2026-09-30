@@ -4,7 +4,8 @@ import FetchHelper from '@/helpers/FetchHelper/FetchHelper'
 // devolve o que o FetchHelper devolver, e a página trata o retorno.
 class UsuarioApi {
 	/**
-	 * Cadastro inicial (sem senha). POST /usuarios → 201 com o usuário criado.
+	 * Cadastro inicial (sem senha). POST /usuarios → 201 com { mensagem, token }; o token identifica
+	 * o cadastro na tela de confirmação (/confirmar?c=<token>).
 	 * Erros: 422 (validação) e 409 (CPF ou e-mail já cadastrado), com a mensagem em texto puro no corpo.
 	 *
 	 * @param {object} dados

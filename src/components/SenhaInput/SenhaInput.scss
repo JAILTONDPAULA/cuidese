@@ -1,0 +1,28 @@
+// O input herda o visual do .field; aqui só abre espaço para o botão dentro dele
+.senha-input {
+	position: relative;
+
+	input {
+		padding-right: 2.75rem;
+	}
+
+	&__alternar {
+		position: absolute;
+		top: 50%;
+		right: var(--space-xs);
+		translate: 0 -50%;
+		display: grid;
+		place-items: center;
+		width: 36px;
+		height: 36px;
+		border: none;
+		border-radius: var(--border-radius);
+		background: transparent;
+		color: var(--text-muted-color);
+
+		&:hover {
+			color: var(--primary-color);
+			background: var(--surface-100);
+		}
+	}
+}

@@ -4,6 +4,7 @@ import Relato from '@/pages/Relato/Relato'
 import Historico from '@/pages/Historico/Historico'
 import Login from '@/pages/Login/Login'
 import Cadastro from '@/pages/Cadastro/Cadastro'
+import ConfirmarSenha from '@/pages/ConfirmarSenha/ConfirmarSenha'
 import NotFound from '@/pages/NotFound/NotFound'
 
 // Cada rota filha de MainLayout é renderizada dentro do template principal.
@@ -17,6 +18,8 @@ const router = createBrowserRouter([
 			{ path: 'historico', element: <Historico /> },
 			{ path: 'login', element: <Login /> },
 			{ path: 'cadastro', element: <Cadastro /> },
+			// /confirmar?c=<md5 do e-mail>&token=<6 dígitos, opcional>
+			{ path: 'confirmar', element: <ConfirmarSenha /> },
 			{ path: '*', element: <NotFound /> },
 		],
 	},

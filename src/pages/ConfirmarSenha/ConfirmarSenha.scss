@@ -1,0 +1,20 @@
+// Estrutura do card vem de styles/_auth.scss; aqui só o que é exclusivo desta tela.
+.confirmar-senha {
+	// Cada seção separada por uma linha
+	&__secao + &__secao {
+		padding-top: var(--space-lg);
+		border-top: 1px solid var(--surface-border);
+	}
+
+	&__titulo {
+		font-size: var(--font-size-base);
+		font-weight: 700;
+		color: var(--text-color);
+	}
+
+	&__texto {
+		margin-top: var(--space-xs);
+		font-size: var(--font-size-sm);
+		color: var(--text-muted-color);
+	}
+}

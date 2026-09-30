@@ -58,7 +58,7 @@ useEffect(() => {
 
 | Classe | Métodos |
 |---|---|
-| `UsuarioApi` | `cadastrar({ nome, cpf, email, telefone, data_nascimento, sexo }, opcoes)`: `POST /usuarios`. Envia CPF e telefone só com os dígitos. O `sexo` é `F`, `M`, `O` ou `N`. Retorna **201** com o usuário. Erros: **422** (validação) e **409** (CPF ou e-mail já cadastrado), com a mensagem em texto puro no corpo |
+| `UsuarioApi` | `cadastrar({ nome, cpf, email, telefone, data_nascimento, sexo }, opcoes)`: `POST /usuarios`. Envia CPF e telefone só com os dígitos. O `sexo` é `F`, `M`, `O` ou `N`. Retorna **201** com `{ mensagem, token }`. O `token` identifica o cadastro e vai para `/confirmar?c=<token>`. Erros: **422** (validação) e **409** (CPF ou e-mail já cadastrado), com a mensagem em texto puro no corpo |
 
 ## Tratando um status específico na página
 

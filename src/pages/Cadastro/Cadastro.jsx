@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import UsuarioApi from '@/api/UsuarioApi'
 import { dialog } from '@/components/Dialog/dialogStore'
 import Logo from '@/components/Logo/Logo'
@@ -16,6 +16,7 @@ const HOJE = new Date().toISOString().slice(0, 10)
 // Os "name" dos campos são os que o POST /usuarios da API espera (ver UsuarioApi.cadastrar).
 function Cadastro() {
 	useOcultarPreload()
+	const navigate = useNavigate()
 
 	// CPF controlado: o valor exibido vem sempre do estado, já com máscara
 	const [cpf, setCpf] = useState('')
@@ -77,9 +78,11 @@ function Cadastro() {
 		const dados = Object.fromEntries(new FormData(event.currentTarget))
 
 		UsuarioApi.cadastrar(dados, { silenciar: [409] })
-			.then(() => {
-				// Próxima etapa (validação do e-mail) ainda não definida
-				toast('Cadastro realizado com sucesso!', { tipo: 'sucesso', temporario: true })
+			.then((resposta) => {
+				// A API devolve { token } identificando o cadastro; vai no "c" da tela de confirmação.
+				// Sem token, abre a confirmação sem "c": o problema é tratado na validação do token.
+				toast(resposta?.mensagem ?? 'Cadastro realizado com sucesso!', { tipo: 'sucesso', temporario: true })
+				navigate(resposta?.token ? `/confirmar?c=${encodeURIComponent(resposta.token)}` : '/confirmar')
 			})
 			.catch((erro) => {
 				// 409: CPF ou e-mail já cadastrado; o corpo traz a mensagem pronta da API.

@@ -8,7 +8,7 @@ import { preload } from '@/components/Preload/preloadStore'
 import './MainLayout.scss'
 
 // Rotas que não exibem header e footer
-const ROTAS_SEM_HEADER_FOOTER = ['/login', '/cadastro']
+const ROTAS_SEM_HEADER_FOOTER = ['/login', '/cadastro', '/confirmar']
 
 // Template principal (equivalente ao layout Blade "main").
 // Toda tela declarada como filha desta rota é renderizada no lugar do <Outlet />.

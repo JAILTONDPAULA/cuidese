@@ -1,0 +1,15 @@
+// Caixas lado a lado ocupando a largura toda; herdam borda, foco e erro do .field
+.codigo-input {
+	display: grid;
+	grid-template-columns: repeat(var(--codigo-tamanho), 1fr);
+	gap: var(--space-sm);
+
+	input {
+		min-width: 0;
+		padding-inline: 0;
+		text-align: center;
+		font-size: var(--font-size-lg);
+		font-weight: 700;
+		caret-color: var(--primary-color);
+	}
+}
