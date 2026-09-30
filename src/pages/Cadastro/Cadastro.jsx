@@ -1,5 +1,8 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import Logo from '@/components/Logo/Logo'
+import { toast } from '@/components/Toast/toast'
+import CPFHelper from '@/helpers/CPFHelper/CPFHelper'
 
 // Hoje no formato AAAA-MM-DD, para impedir data de nascimento no futuro
 const HOJE = new Date().toISOString().slice(0, 10)
@@ -7,6 +10,26 @@ const HOJE = new Date().toISOString().slice(0, 10)
 // Primeira etapa do cadastro: dados pessoais, sem senha.
 // Os "name" dos campos seguem o model User da API Laravel.
 function Cadastro() {
+	// CPF controlado: o valor exibido vem sempre do estado, já com máscara
+	const [cpf, setCpf] = useState('')
+	const [cpfInvalido, setCpfInvalido] = useState(false)
+
+	function handleCpfChange(event) {
+		const mascarado = CPFHelper.mascarar(event.target.value)
+		const completo = mascarado.replace(/\D/g, '').length === 11
+		const invalido = completo && !CPFHelper.validar(mascarado)
+
+		// Com 11 dígitos, um 12º digitado é descartado e o valor não muda: não repete o toast
+		if (invalido && mascarado !== cpf) {
+			toast('O CPF informado não é válido. Confira os números.', { tipo: 'erro', temporario: true })
+		}
+
+		// setCustomValidity faz o navegador tratar o campo como inválido (bloqueia o envio do form)
+		event.target.setCustomValidity(invalido ? 'CPF inválido' : '')
+		setCpf(mascarado)
+		setCpfInvalido(invalido)
+	}
+
 	// Envio e validação do e-mail ainda não definidos
 	function handleSubmit(event) {
 		event.preventDefault()
@@ -36,15 +59,16 @@ function Cadastro() {
 						<small className="field__erro">Informe seu nome completo</small>
 					</label>
 
-					<label className="field">
+					<label className={`field${cpfInvalido ? ' field--erro' : ''}`}>
 						<span className="field__label">CPF</span>
 						<input
 							type="text"
 							name="cpf"
 							inputMode="numeric"
 							placeholder="000.000.000-00"
-							maxLength={14}
-							pattern="\d{3}\.?\d{3}\.?\d{3}-?\d{2}"
+							pattern="\d{3}\.\d{3}\.\d{3}-\d{2}"
+							value={cpf}
+							onChange={handleCpfChange}
 							required
 						/>
 						<small className="field__erro">Informe um CPF válido</small>

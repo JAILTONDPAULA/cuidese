@@ -5,6 +5,8 @@
 // 	<small className="field__dica">Texto de ajuda (opcional)</small>
 // 	<small className="field__erro">Informe um e-mail válido</small>
 // </label>
+//
+// O erro aparece sozinho via :user-invalid, ou na hora com a classe "field--erro" no label.
 
 .field {
 	display: flex;
@@ -88,7 +90,21 @@
 		color: var(--red-600);
 	}
 
-	&:has(:user-invalid) {
+	// Erro forçado pelo código (ex.: CPF inválido ao completar 11 dígitos),
+	// sem esperar o :user-invalid, que só ativa depois que o usuário sai do campo
+	&--erro {
+		input,
+		textarea,
+		select {
+			&,
+			&:focus-visible {
+				border-color: var(--red-500);
+			}
+		}
+	}
+
+	&:has(:user-invalid),
+	&--erro {
 		.field__label {
 			color: var(--red-600);
 		}
