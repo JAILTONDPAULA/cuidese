@@ -58,4 +58,16 @@ useEffect(() => {
 
 | Classe | Métodos |
 |---|---|
-| `UsuarioApi` | `validarCPF(cpf, opcoes)`: `POST /usuarios/validar-cpf`. O **endpoint ainda não existe no Laravel** |
+| `UsuarioApi` | `cadastrar({ nome, cpf, email, telefone, data_nascimento, sexo }, opcoes)`: `POST /usuarios`. Envia CPF e telefone só com os dígitos. O `sexo` é `F`, `M`, `O` ou `N`. Retorna **201** com o usuário. Erros: **422** (validação) e **409** (CPF ou e-mail já cadastrado), com a mensagem em texto puro no corpo |
+
+## Tratando um status específico na página
+
+Quando a página quer tratar um erro do seu jeito (ex.: abrir um dialog no 409), ela passa `silenciar` para o FetchHelper não mostrar o toast daquele status. Os outros erros continuam com toast normalmente:
+
+```js
+UsuarioApi.cadastrar(dados, { silenciar: [409] }).catch((erro) => {
+	if (erro instanceof ApiErro && erro.status === 409) {
+		dialog({ id: 'cadastro-existente', titulo: 'Cadastro já existe', conteudo: erro.corpo, tipo: 'alerta' })
+	}
+})
+```

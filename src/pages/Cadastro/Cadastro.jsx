@@ -1,8 +1,11 @@
 import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import UsuarioApi from '@/api/UsuarioApi'
+import { dialog } from '@/components/Dialog/dialogStore'
 import Logo from '@/components/Logo/Logo'
 import { toast } from '@/components/Toast/toast'
 import CPFHelper from '@/helpers/CPFHelper/CPFHelper'
+import { ApiErro } from '@/helpers/FetchHelper/FetchHelper'
 import TelefoneHelper from '@/helpers/TelefoneHelper/TelefoneHelper'
 import { useOcultarPreload } from '@/components/Preload/preloadStore'
 
@@ -10,7 +13,7 @@ import { useOcultarPreload } from '@/components/Preload/preloadStore'
 const HOJE = new Date().toISOString().slice(0, 10)
 
 // Primeira etapa do cadastro: dados pessoais, sem senha.
-// Os "name" dos campos seguem o model User da API Laravel.
+// Os "name" dos campos são os que o POST /usuarios da API espera (ver UsuarioApi.cadastrar).
 function Cadastro() {
 	useOcultarPreload()
 
@@ -65,9 +68,26 @@ function Cadastro() {
 		atualizarTelefone(event.target, telefone, true)
 	}
 
-	// Envio e validação do e-mail ainda não definidos
+	// Só é chamado com todos os campos válidos: o navegador bloqueia o envio antes
+	// (required, pattern e setCustomValidity do CPF e do telefone)
 	function handleSubmit(event) {
 		event.preventDefault()
+
+		// Lê todos os campos pelo "name" de cada um
+		const dados = Object.fromEntries(new FormData(event.currentTarget))
+
+		UsuarioApi.cadastrar(dados, { silenciar: [409] })
+			.then(() => {
+				// Próxima etapa (validação do e-mail) ainda não definida
+				toast('Cadastro realizado com sucesso!', { tipo: 'sucesso', temporario: true })
+			})
+			.catch((erro) => {
+				// 409: CPF ou e-mail já cadastrado; o corpo traz a mensagem pronta da API.
+				// Os demais erros já foram avisados por toast pelo FetchHelper.
+				if (erro instanceof ApiErro && erro.status === 409) {
+					dialog({ id: 'cadastro-existente', titulo: 'Cadastro já existe', conteudo: erro.corpo, tipo: 'alerta' })
+				}
+			})
 	}
 
 	return (
@@ -85,7 +105,7 @@ function Cadastro() {
 						<span className="field__label">Nome completo</span>
 						<input
 							type="text"
-							name="name"
+							name="nome"
 							autoComplete="name"
 							placeholder="Seu nome completo"
 							required
@@ -147,10 +167,10 @@ function Cadastro() {
 								<option value="" disabled>
 									Selecione
 								</option>
-								<option value="feminino">Feminino</option>
-								<option value="masculino">Masculino</option>
-								<option value="outro">Outro</option>
-								<option value="nao_informado">Prefiro não informar</option>
+								<option value="F">Feminino</option>
+								<option value="M">Masculino</option>
+								<option value="O">Outro</option>
+								<option value="N">Prefiro não informar</option>
 							</select>
 							<small className="field__erro">Selecione uma opção</small>
 						</label>

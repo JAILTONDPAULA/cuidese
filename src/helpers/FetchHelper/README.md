@@ -34,6 +34,7 @@ FetchHelper.call(url, { metodo, dados, retorno, preload, headers, signal })
 | `preload` | `boolean` ou `string` | `true` | Mostra o preload durante a requisição. Uma **string** vira o texto do preload |
 | `headers` | objeto ou `null` | `null` | Headers extras. Sobrescrevem os padrões |
 | `signal` | `AbortSignal` | — | Permite cancelar a requisição (`AbortController`) |
+| `silenciar` | `number[]` | `[]` | Status HTTP que **não** geram toast, porque a página vai tratá-los no próprio `.catch()` (ex.: `[409]`). O erro é relançado normalmente |
 
 As opções são um **objeto**. Passe só o que muda em relação ao padrão:
 
@@ -61,6 +62,7 @@ Qualquer falha passa pelo `catch` do helper, que **mostra o toast e relança o e
 | Corpo não é JSON (com `retorno: 'json'`) | corpo recebido | `ApiErro` |
 | Sem conexão, servidor desligado, CORS | "Não foi possível conectar ao servidor" | `TypeError` do fetch |
 | Cancelado (`controller.abort()`) | **nenhum** | `AbortError` |
+| Status listado em `silenciar` | **nenhum** | `ApiErro` (a página trata) |
 
 **Como o corpo aparece no toast:**
 - **Texto:** aparece como texto.

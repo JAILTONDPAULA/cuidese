@@ -29,10 +29,14 @@ class FetchHelper {
 	 * @param {boolean|string} [opcoes.preload=true] Mostra o preload durante a requisição; uma string vira o texto dele
 	 * @param {object|null} [opcoes.headers=null] Headers extras (sobrescrevem os padrões)
 	 * @param {AbortSignal} [opcoes.signal] Para cancelar (AbortController)
+	 * @param {number[]} [opcoes.silenciar=[]] Status HTTP que não geram toast, porque a página vai tratá-los (ex.: [409])
 	 * @returns {Promise<any>} O corpo no formato de `retorno`
 	 * @throws {ApiErro|Error} Depois de mostrar o toast; a página decide o que fazer no .catch()
 	 */
-	static async call(url, { metodo = 'GET', dados = null, retorno = 'json', preload: comPreload = true, headers = null, signal } = {}) {
+	static async call(
+		url,
+		{ metodo = 'GET', dados = null, retorno = 'json', preload: comPreload = true, headers = null, signal, silenciar = [] } = {},
+	) {
 		if (!RETORNOS.includes(retorno)) throw new Error(`FetchHelper: retorno "${retorno}" inválido. Use: ${RETORNOS.join(', ')}`)
 
 		const { endereco, init } = FetchHelper.#montar(url, { metodo, dados, headers, signal })
@@ -49,8 +53,10 @@ class FetchHelper {
 
 			return await FetchHelper.#ler(resposta, retorno)
 		} catch (erro) {
-			// Cancelamento é intencional (ex.: saiu da página): sem toast
-			if (erro.name !== 'AbortError') FetchHelper.#avisar(erro)
+			// Sem toast quando o cancelamento é intencional (ex.: saiu da página)
+			// ou quando a página avisou que trata aquele status
+			const silenciado = erro instanceof ApiErro && silenciar.includes(erro.status)
+			if (erro.name !== 'AbortError' && !silenciado) FetchHelper.#avisar(erro)
 			throw erro
 		} finally {
 			if (comPreload) preload.ocultar()
