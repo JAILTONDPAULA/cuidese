@@ -11,11 +11,12 @@ Tela de carregamento que cobre a tela toda (`position: fixed`), com o fundo padr
 - O `<Preload />` é renderizado uma única vez no `MainLayout`. Não coloque outro em telas.
 - Ele **já começa visível**, e a cada troca de página o `MainLayout` o mostra de novo.
 - **Cada página decide quando ele sai.**
-- Funciona com um **contador**:
-	- a página que está abrindo conta 1;
-	- cada requisição em andamento feita pelo `FetchHelper` soma mais 1;
-	- `preload.ocultar()` e o fim de cada requisição subtraem 1;
-	- o preload só some quando o contador chega a zero.
+- O preload fica na tela **enquanto houver algo pendente**:
+	- **a página** que está abrindo, até chamar `useOcultarPreload()`. Isso vale **uma vez só**: chamar de novo não desconta nada, e o `StrictMode` do React roda os efeitos duas vezes em desenvolvimento;
+	- **cada requisição** em andamento feita pelo `FetchHelper`, ou cada `preload.mostrar()` sem o `ocultar()` correspondente.
+- **Ticket:** cada `mostrar()` devolve um ticket com a "geração" da página atual, que o `ocultar(ticket)` usa. Se a pessoa trocar de página, uma requisição da página anterior que termina depois **não** fecha o preload da página nova.
+
+Exemplo: uma página que valida algo ao abrir fica com o preload na tela durante a requisição inteira, mesmo já tendo chamado `useOcultarPreload()`. Uma página sem requisição libera o preload assim que monta.
 
 ## Uso
 
@@ -62,13 +63,13 @@ Cada `mostrar()` precisa de um `ocultar()` correspondente. Use `try/finally` par
 
 ```js
 async function processar() {
-	preload.mostrar('Preparando o compartilhamento')
+	const ticket = preload.mostrar('Preparando o compartilhamento')
 	try {
 		await algoDemorado()
 		preload.texto('Quase pronto') // troca o texto sem fechar
 		await outraCoisa()
 	} finally {
-		preload.ocultar()
+		preload.ocultar(ticket)
 	}
 }
 ```
@@ -77,9 +78,9 @@ async function processar() {
 
 | Método | Descrição |
 |---|---|
-| `preload.mostrar(texto?)` | Mostra o preload e soma 1 no contador. Sem texto, mantém o atual se já estiver visível, ou usa `'Carregando'` |
+| `preload.mostrar(texto?)` | Mostra o preload e o mantém até o `ocultar()` correspondente. **Retorna um ticket.** Sem texto, mantém o atual se já estiver visível, ou usa `'Carregando'` |
 | `preload.texto(texto)` | Troca o texto com o preload já aberto |
-| `preload.ocultar()` | Subtrai 1 do contador. Some (com fade) quando chega a zero |
+| `preload.ocultar(ticket?)` | Encerra um `mostrar()`. O preload some (com fade) quando não houver mais nada pendente. Com o ticket, é ignorado se for de outra página |
 | `useOcultarPreload()` | Hook: libera a parte da página quando ela termina de montar |
 | `preload.iniciarPagina()` | **Uso interno do MainLayout**: a cada troca de página, zera o contador em 1 e volta ao texto padrão |
 

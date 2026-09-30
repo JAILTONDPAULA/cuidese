@@ -5,46 +5,79 @@ export const TEXTO_PADRAO = 'Carregando'
 
 // Estado global do preload. Começa visível: cada página decide quando ocultar.
 // estado: 'visivel' → 'saindo' (animação de saída) → 'oculto'
-// contador: quantos "pedidos" de preload estão ativos (página carregando + requisições em andamento).
-// Cada mostrar() soma 1 e cada ocultar() subtrai 1; o preload só some quando chega a zero,
-// assim uma requisição que termina primeiro não fecha o preload de outra ainda em andamento.
-export const usePreloadStore = create((set) => ({
+//
+// O preload fica na tela enquanto houver algo pendente:
+// - paginaPendente: a página que está abrindo ainda não chamou useOcultarPreload()
+// - requisicoes: quantos mostrar() (ex.: requisições do FetchHelper) ainda não tiveram o ocultar()
+//
+// geracao muda a cada troca de página. Cada mostrar() devolve um ticket com a geração;
+// um ocultar(ticket) de uma página anterior é ignorado, para uma requisição antiga que termina
+// depois da navegação não fechar o preload da página nova.
+function pendente(s) {
+	return s.paginaPendente || s.requisicoes > 0
+}
+
+// Recalcula o estado visual a partir do que está pendente
+function comEstado(s) {
+	if (pendente(s)) return { ...s, estado: 'visivel' }
+	return { ...s, estado: s.estado === 'visivel' ? 'saindo' : s.estado }
+}
+
+export const usePreloadStore = create((set, get) => ({
 	estado: 'visivel',
 	texto: TEXTO_PADRAO,
-	contador: 1,
+	geracao: 0,
+	paginaPendente: true,
+	requisicoes: 0,
 
 	// Sem texto: mantém o atual se já estiver visível, senão volta ao padrão
-	mostrar: (texto) =>
-		set((s) => ({
-			contador: s.contador + 1,
-			estado: 'visivel',
-			texto: texto ?? (s.estado === 'visivel' ? s.texto : TEXTO_PADRAO),
-		})),
+	mostrar: (texto) => {
+		set((s) =>
+			comEstado({
+				...s,
+				requisicoes: s.requisicoes + 1,
+				texto: texto ?? (s.estado === 'visivel' ? s.texto : TEXTO_PADRAO),
+			}),
+		)
+		return { geracao: get().geracao }
+	},
 
 	alterarTexto: (texto) => set({ texto }),
 
-	ocultar: () =>
+	// Sem ticket: vale para a página atual (uso manual)
+	ocultar: (ticket) =>
 		set((s) => {
-			const contador = Math.max(0, s.contador - 1)
-			return contador === 0 && s.estado === 'visivel' ? { contador, estado: 'saindo' } : { contador }
+			if (ticket && ticket.geracao !== s.geracao) return s
+			return comEstado({ ...s, requisicoes: Math.max(0, s.requisicoes - 1) })
 		}),
 
-	// Início de cada página (chamado pelo MainLayout): zera sobras da página anterior
-	iniciarPagina: () => set({ contador: 1, estado: 'visivel', texto: TEXTO_PADRAO }),
+	// Libera a parte da página. Chamar de novo não faz nada (o StrictMode roda os efeitos duas vezes)
+	liberarPagina: () => set((s) => (s.paginaPendente ? comEstado({ ...s, paginaPendente: false }) : s)),
+
+	// Início de cada página (chamado pelo MainLayout): nova geração, página pendente, sem requisições
+	iniciarPagina: () =>
+		set((s) => ({ geracao: s.geracao + 1, paginaPendente: true, requisicoes: 0, estado: 'visivel', texto: TEXTO_PADRAO })),
 
 	// Chamado pelo componente quando a animação de saída termina
 	finalizar: () => set((s) => (s.estado === 'saindo' ? { estado: 'oculto' } : s)),
 }))
 
 export const preload = {
-	/** Mostra o preload (soma 1 no contador). @param {string} [texto] */
+	/**
+	 * Mostra o preload até o ocultar() correspondente.
+	 * @param {string} [texto]
+	 * @returns {{ geracao: number }} ticket para passar ao ocultar()
+	 */
 	mostrar: (texto) => usePreloadStore.getState().mostrar(texto),
 
 	/** Troca o texto com o preload já aberto (ex.: 'Gerando resumo...'). @param {string} texto */
 	texto: (texto) => usePreloadStore.getState().alterarTexto(texto),
 
-	/** Subtrai 1 do contador; oculta (com animação) quando chegar a zero. */
-	ocultar: () => usePreloadStore.getState().ocultar(),
+	/**
+	 * Encerra um mostrar(). O preload some quando não houver mais nada pendente.
+	 * @param {{ geracao: number }} [ticket] o retorno do mostrar(); ignorado se for de outra página
+	 */
+	ocultar: (ticket) => usePreloadStore.getState().ocultar(ticket),
 
 	/** Uso interno do MainLayout, a cada troca de página. */
 	iniciarPagina: () => usePreloadStore.getState().iniciarPagina(),
@@ -57,6 +90,6 @@ export const preload = {
  */
 export function useOcultarPreload() {
 	useEffect(() => {
-		preload.ocultar()
+		usePreloadStore.getState().liberarPagina()
 	}, [])
 }

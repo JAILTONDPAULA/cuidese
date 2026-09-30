@@ -25,7 +25,9 @@ Retorna o MD5 do e-mail **normalizado** (sem espaços nas pontas e em minúscula
 
 Use este método sempre que o hash for comparado com o e-mail salvo no banco. Sem a normalização, `Maria@Exemplo.com` e `maria@exemplo.com` gerariam hashes diferentes.
 
-Hoje nenhuma tela o usa. O cadastro usava para montar `/confirmar?c=<hash>`, mas passou a usar o token devolvido pela API.
+Hoje nenhuma tela usa o `md5Email`. O cadastro usava para montar `/confirmar?c=<hash>`, mas passou a usar o token devolvido pela API.
+
+O `md5` é usado na tela de confirmação (`/confirmar`): o código de 6 dígitos digitado vai como `tokenB = md5(código)` na pré-validação do token.
 
 ## Cuidados
 

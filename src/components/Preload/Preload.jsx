@@ -21,7 +21,7 @@ function Preload() {
 		return () => document.body.classList.remove('preload-ativo')
 	}, [ativo])
 
-	// Ajuda a achar página que esqueceu de chamar preload.ocultar()
+	// Ajuda a achar página que esqueceu de chamar useOcultarPreload() ou um mostrar() sem ocultar()
 	useEffect(() => {
 		if (!import.meta.env.DEV || estado !== 'visivel') return
 		const timer = setTimeout(() => {

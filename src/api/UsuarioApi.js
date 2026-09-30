@@ -32,6 +32,23 @@ class UsuarioApi {
 			...opcoes,
 		})
 	}
+
+	/**
+	 * Pré-validação do token de confirmação. POST /usuarios/validar-token → 200 com { mensagem, token }
+	 * (token = código de 6 dígitos). Erros em texto puro: 422 (faltou tokenA/tokenB), token inválido e 410 (expirado).
+	 *
+	 * @param {string} tokenA Identificador do cadastro (o "c" da URL)
+	 * @param {string} tokenB Hash do token: o "token" do link do e-mail, ou o md5 do código digitado
+	 * @param {object} [opcoes] Opções extras do FetchHelper (ex.: { signal })
+	 */
+	static validarToken(tokenA, tokenB, opcoes) {
+		return FetchHelper.call('/usuarios/validar-token', {
+			metodo: 'POST',
+			dados: { tokenA, tokenB },
+			preload: 'Validando o código',
+			...opcoes,
+		})
+	}
 }
 
 export default UsuarioApi

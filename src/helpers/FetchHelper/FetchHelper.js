@@ -41,7 +41,8 @@ class FetchHelper {
 
 		const { endereco, init } = FetchHelper.#montar(url, { metodo, dados, headers, signal })
 
-		if (comPreload) preload.mostrar(typeof comPreload === 'string' ? comPreload : undefined)
+		// O ticket garante que o ocultar() só afete a página em que a requisição começou
+		const ticket = comPreload ? preload.mostrar(typeof comPreload === 'string' ? comPreload : undefined) : null
 
 		try {
 			const resposta = await fetch(endereco, init)
@@ -59,7 +60,7 @@ class FetchHelper {
 			if (erro.name !== 'AbortError' && !silenciado) FetchHelper.#avisar(erro)
 			throw erro
 		} finally {
-			if (comPreload) preload.ocultar()
+			if (ticket) preload.ocultar(ticket)
 		}
 	}
 

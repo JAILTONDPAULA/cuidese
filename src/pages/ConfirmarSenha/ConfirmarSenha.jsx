@@ -1,27 +1,59 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
+import UsuarioApi from '@/api/UsuarioApi'
 import CodigoInput from '@/components/CodigoInput/CodigoInput'
 import Logo from '@/components/Logo/Logo'
 import SenhaInput from '@/components/SenhaInput/SenhaInput'
 import { useOcultarPreload } from '@/components/Preload/preloadStore'
+import HashHelper from '@/helpers/HashHelper/HashHelper'
 import './ConfirmarSenha.scss'
 
 const TAMANHO_CODIGO = 6
 
-// Rota: /confirmar?c=<md5 do e-mail>&token=<6 dígitos, opcional>
-// "c" identifica o cadastro (vem do cadastro ou do link do e-mail). Se estiver ausente ou errado,
-// o problema é tratado pela resposta da API ao validar o token, não aqui na tela.
-// Duas seções: confirmação do código e criação da senha.
-// Quando cada seção aparece e o envio serão implementados depois.
+// Rota: /confirmar?c=<identificador do cadastro>&token=<hash do link do e-mail, opcional>
+// - c: vai como tokenA na validação. Se estiver ausente ou errado, a API responde com erro (toast).
+// - token: é o hash enviado no link do e-mail (não o código de 6 dígitos); vai direto como tokenB.
+// Etapas: 1) confirmar o código (pré-validação do token); 2) criar a senha, que só aparece depois
+// que o token for validado. O envio da senha será implementado depois.
 function ConfirmarSenha() {
 	useOcultarPreload()
 
 	const [parametros] = useSearchParams()
 	const identificador = parametros.get('c') ?? ''
+	const tokenUrl = parametros.get('token') ?? ''
 
-	// Se o link já trouxe o token, as caixas começam preenchidas
-	const tokenUrl = (parametros.get('token') ?? '').replace(/\D/g, '').slice(0, TAMANHO_CODIGO)
-	const [codigo, setCodigo] = useState(tokenUrl)
+	const [codigo, setCodigo] = useState('')
+	const [etapa, setEtapa] = useState('token') // 'token' | 'senha'
+	const [tokenValidado, setTokenValidado] = useState('') // tokenB aceito pela API, para o envio da senha
+
+	// Chama a pré-validação. Em caso de erro não faz nada aqui: o FetchHelper já mostra o toast
+	// com a mensagem da API (ex.: "Token inválido.") e a pessoa pode corrigir o código.
+	function validarToken(tokenB, opcoes) {
+		return UsuarioApi.validarToken(identificador, tokenB, opcoes)
+			.then((resposta) => {
+				// A API devolve o código de 6 dígitos: preenche as caixas e avança para a senha
+				setCodigo(String(resposta?.token ?? '').slice(0, TAMANHO_CODIGO))
+				setTokenValidado(tokenB)
+				setEtapa('senha')
+			})
+			.catch(() => {})
+	}
+
+	// Link do e-mail com token: valida sozinho ao abrir a tela.
+	// O abort cancela a requisição se a pessoa sair antes (e evita a chamada duplicada do StrictMode).
+	useEffect(() => {
+		if (!tokenUrl) return
+		const controller = new AbortController()
+		validarToken(tokenUrl, { signal: controller.signal })
+		return () => controller.abort()
+		// eslint-disable-next-line react-hooks/exhaustive-deps -- roda só ao abrir a tela / trocar o token da URL
+	}, [tokenUrl])
+
+	// Ao digitar o último dígito, valida o código (tokenB = md5 do código)
+	function handleCodigoChange(valor) {
+		setCodigo(valor)
+		if (valor.length === TAMANHO_CODIGO) validarToken(HashHelper.md5(valor))
+	}
 
 	// Lógica de envio será implementada depois
 	function handleSubmit(event) {
@@ -40,46 +72,48 @@ function ConfirmarSenha() {
 
 				<input type="hidden" name="c" value={identificador} />
 
-				{/* Seção 1: código de confirmação */}
-				<section className="auth__campos confirmar-senha__secao">
-					<div>
-						<h2 className="confirmar-senha__titulo">Código de confirmação</h2>
-						<p className="confirmar-senha__texto">Digite o código de {TAMANHO_CODIGO} dígitos enviado para o seu e-mail.</p>
-					</div>
+				{/* Etapa 1: código de confirmação */}
+				{etapa === 'token' && (
+					<section className="auth__campos confirmar-senha__secao">
+						<div>
+							<h2 className="confirmar-senha__titulo">Código de confirmação</h2>
+							<p className="confirmar-senha__texto">Digite o código de {TAMANHO_CODIGO} dígitos enviado para o seu e-mail.</p>
+						</div>
 
-					<div className="field">
-						<CodigoInput tamanho={TAMANHO_CODIGO} valor={codigo} onChange={setCodigo} name="token" />
-						<small className="field__erro">Código inválido</small>
-					</div>
+						<div className="field">
+							<CodigoInput tamanho={TAMANHO_CODIGO} valor={codigo} onChange={handleCodigoChange} autoFocus={!tokenUrl} />
+							<small className="field__erro">Código inválido</small>
+						</div>
+					</section>
+				)}
 
-					<button type="button" className="btn btn--contorno">
-						Confirmar código
-					</button>
-				</section>
+				{/* Etapa 2: nova senha (só depois do token validado) */}
+				{etapa === 'senha' && (
+					<section className="auth__campos confirmar-senha__secao">
+						<input type="hidden" name="token" value={tokenValidado} />
 
-				{/* Seção 2: nova senha */}
-				<section className="auth__campos confirmar-senha__secao">
-					<div>
-						<h2 className="confirmar-senha__titulo">Crie sua senha</h2>
-						<p className="confirmar-senha__texto">Use a mesma senha nos dois campos.</p>
-					</div>
+						<div>
+							<h2 className="confirmar-senha__titulo">Crie sua senha</h2>
+							<p className="confirmar-senha__texto">Use a mesma senha nos dois campos.</p>
+						</div>
 
-					<label className="field">
-						<span className="field__label">Senha</span>
-						<SenhaInput name="senha" autoComplete="new-password" placeholder="Crie uma senha" required />
-						<small className="field__erro">Informe uma senha</small>
-					</label>
+						<label className="field">
+							<span className="field__label">Senha</span>
+							<SenhaInput name="senha" autoComplete="new-password" placeholder="Crie uma senha" required autoFocus />
+							<small className="field__erro">Informe uma senha</small>
+						</label>
 
-					<label className="field">
-						<span className="field__label">Confirme a senha</span>
-						<SenhaInput name="senha_confirmacao" autoComplete="new-password" placeholder="Repita a senha" required />
-						<small className="field__erro">As senhas não conferem</small>
-					</label>
+						<label className="field">
+							<span className="field__label">Confirme a senha</span>
+							<SenhaInput name="senha_confirmacao" autoComplete="new-password" placeholder="Repita a senha" required />
+							<small className="field__erro">As senhas não conferem</small>
+						</label>
 
-					<button type="submit" className="btn btn--primario">
-						Salvar senha
-					</button>
-				</section>
+						<button type="submit" className="btn btn--primario">
+							Salvar senha
+						</button>
+					</section>
+				)}
 
 				<section className="auth__links">
 					<Link to="/login">Voltar para o login</Link>
