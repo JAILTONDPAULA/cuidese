@@ -1,11 +1,15 @@
-import { useEffect, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCheck, faCircle, faXmark } from '@fortawesome/free-solid-svg-icons'
 import UsuarioApi from '@/api/UsuarioApi'
 import CodigoInput from '@/components/CodigoInput/CodigoInput'
 import Logo from '@/components/Logo/Logo'
 import SenhaInput from '@/components/SenhaInput/SenhaInput'
 import { useOcultarPreload } from '@/components/Preload/preloadStore'
+import { toast } from '@/components/Toast/toast'
 import HashHelper from '@/helpers/HashHelper/HashHelper'
+import SenhaHelper from '@/helpers/SenhaHelper/SenhaHelper'
 import './ConfirmarSenha.scss'
 
 const TAMANHO_CODIGO = 6
@@ -14,9 +18,10 @@ const TAMANHO_CODIGO = 6
 // - c: vai como tokenA na validação. Se estiver ausente ou errado, a API responde com erro (toast).
 // - token: é o hash enviado no link do e-mail (não o código de 6 dígitos); vai direto como tokenB.
 // Etapas: 1) confirmar o código (pré-validação do token); 2) criar a senha, que só aparece depois
-// que o token for validado. O envio da senha será implementado depois.
+// que o token for validado; o envio grava a senha (POST /usuarios/redefinir-senha) e leva ao login.
 function ConfirmarSenha() {
 	useOcultarPreload()
+	const navigate = useNavigate()
 
 	const [parametros] = useSearchParams()
 	const identificador = parametros.get('c') ?? ''
@@ -55,9 +60,37 @@ function ConfirmarSenha() {
 		if (valor.length === TAMANHO_CODIGO) validarToken(HashHelper.md5(valor))
 	}
 
-	// Lógica de envio será implementada depois
+	// Nova senha: checklist dos requisitos enquanto digita, e confirmação igual
+	const [senha, setSenha] = useState('')
+	const [confirmacao, setConfirmacao] = useState('')
+	const [senhaTocada, setSenhaTocada] = useState(false) // saiu do campo senha ao menos uma vez
+	const [confirmacaoTocada, setConfirmacaoTocada] = useState(false)
+	const senhaRef = useRef(null)
+	const confirmacaoRef = useRef(null)
+
+	const regras = SenhaHelper.verificar(senha)
+	const senhaValida = regras.every((regra) => regra.ok)
+	const senhasConferem = SenhaHelper.conferem(senha, confirmacao)
+	const erroSenha = senhaTocada && !senhaValida
+	const erroConfirmacao = confirmacaoTocada && Boolean(confirmacao) && !senhasConferem
+
+	// Marca os campos como inválidos para o navegador, bloqueando o envio do form até estar tudo certo
+	useEffect(() => {
+		senhaRef.current?.setCustomValidity(SenhaHelper.motivoInvalido(senha) ?? '')
+		confirmacaoRef.current?.setCustomValidity(senhasConferem ? '' : 'As senhas não conferem.')
+	}, [senha, senhasConferem, etapa])
+
+	// Só é chamado com a senha válida e a confirmação igual: o setCustomValidity dos campos
+	// faz o navegador bloquear o envio antes. Em caso de erro, o FetchHelper já mostra o toast.
 	function handleSubmit(event) {
 		event.preventDefault()
+
+		UsuarioApi.redefinirSenha(identificador, tokenValidado, senha)
+			.then((resposta) => {
+				toast(resposta?.mensagem ?? 'Senha definida com sucesso.', { tipo: 'sucesso', temporario: true })
+				navigate('/login')
+			})
+			.catch(() => {})
 	}
 
 	return (
@@ -97,15 +130,46 @@ function ConfirmarSenha() {
 							<p className="confirmar-senha__texto">Use a mesma senha nos dois campos.</p>
 						</div>
 
-						<label className="field">
+						<label className={`field${erroSenha ? ' field--erro' : ''}`}>
 							<span className="field__label">Senha</span>
-							<SenhaInput name="senha" autoComplete="new-password" placeholder="Crie uma senha" required autoFocus />
-							<small className="field__erro">Informe uma senha</small>
+							<SenhaInput
+								ref={senhaRef}
+								name="senha"
+								autoComplete="new-password"
+								placeholder="Crie uma senha"
+								value={senha}
+								onChange={(e) => setSenha(e.target.value)}
+								onBlur={() => setSenhaTocada(true)}
+								required
+								autoFocus
+							/>
 						</label>
 
-						<label className="field">
+						{/* Requisitos: cinza = pendente, verde = atendido, vermelho = pendente depois de sair do campo */}
+						<ul className="confirmar-senha__regras" aria-label="Requisitos da senha">
+							{regras.map((regra) => {
+								const situacao = regra.ok ? 'ok' : senhaTocada ? 'erro' : 'pendente'
+								return (
+									<li key={regra.id} className={`confirmar-senha__regra confirmar-senha__regra--${situacao}`}>
+										<FontAwesomeIcon icon={{ ok: faCheck, erro: faXmark, pendente: faCircle }[situacao]} fixedWidth />
+										{regra.texto}
+									</li>
+								)
+							})}
+						</ul>
+
+						<label className={`field${erroConfirmacao ? ' field--erro' : ''}`}>
 							<span className="field__label">Confirme a senha</span>
-							<SenhaInput name="senha_confirmacao" autoComplete="new-password" placeholder="Repita a senha" required />
+							<SenhaInput
+								ref={confirmacaoRef}
+								name="senha_confirmacao"
+								autoComplete="new-password"
+								placeholder="Repita a senha"
+								value={confirmacao}
+								onChange={(e) => setConfirmacao(e.target.value)}
+								onBlur={() => setConfirmacaoTocada(true)}
+								required
+							/>
 							<small className="field__erro">As senhas não conferem</small>
 						</label>
 
@@ -117,6 +181,8 @@ function ConfirmarSenha() {
 
 				<section className="auth__links">
 					<Link to="/login">Voltar para o login</Link>
+					<span className="auth__links-separador" aria-hidden="true">•</span>
+					<Link to="/recuperar-senha">Solicitar redefinição de senha</Link>
 				</section>
 
 				<footer className="auth__footer">© {new Date().getFullYear()} Cuidese</footer>

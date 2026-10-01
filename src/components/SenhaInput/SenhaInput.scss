@@ -4,6 +4,12 @@
 
 	input {
 		padding-right: 2.75rem;
+
+		// Esconde o olho nativo do Edge, que duplicaria o botão do componente
+		&::-ms-reveal,
+		&::-ms-clear {
+			display: none;
+		}
 	}
 
 	&__alternar {

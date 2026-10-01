@@ -17,4 +17,41 @@
 		font-size: var(--font-size-sm);
 		color: var(--text-muted-color);
 	}
+
+	// Checklist dos requisitos da senha, logo abaixo do campo
+	&__regras {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-xs);
+		margin-top: calc(var(--space-sm) * -1); // cola no campo senha, compensando o gap da seção
+		font-size: var(--font-size-sm);
+	}
+
+	&__regra {
+		display: flex;
+		align-items: center;
+		gap: var(--space-sm);
+		transition: color 0.15s;
+
+		&--pendente {
+			color: var(--text-muted-color);
+
+			svg {
+				font-size: 0.45em; // bolinha pequena
+				color: var(--surface-400);
+			}
+		}
+
+		&--ok {
+			color: var(--tertiary-700);
+
+			svg {
+				color: var(--tertiary-500);
+			}
+		}
+
+		&--erro {
+			color: var(--red-600);
+		}
+	}
 }

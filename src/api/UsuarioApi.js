@@ -49,6 +49,24 @@ class UsuarioApi {
 			...opcoes,
 		})
 	}
+
+	/**
+	 * Define a nova senha depois do token validado. POST /usuarios/redefinir-senha → 200 com { mensagem }.
+	 * Erros em texto puro: 422 (validação), token inválido e 410 (expirado).
+	 *
+	 * @param {string} tokenA Identificador do cadastro (o "c" da URL)
+	 * @param {string} tokenB O mesmo tokenB aceito na validação do token
+	 * @param {string} password A nova senha, em texto (o backend gera o hash)
+	 * @param {object} [opcoes] Opções extras do FetchHelper
+	 */
+	static redefinirSenha(tokenA, tokenB, password, opcoes) {
+		return FetchHelper.call('/usuarios/redefinir-senha', {
+			metodo: 'POST',
+			dados: { tokenA, tokenB, password },
+			preload: 'Salvando sua senha',
+			...opcoes,
+		})
+	}
 }
 
 export default UsuarioApi

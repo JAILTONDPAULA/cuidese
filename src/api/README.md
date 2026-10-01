@@ -60,6 +60,9 @@ useEffect(() => {
 |---|---|
 | `UsuarioApi` | `cadastrar({ nome, cpf, email, telefone, data_nascimento, sexo }, opcoes)`: `POST /usuarios`. Envia CPF e telefone só com os dígitos. O `sexo` é `F`, `M`, `O` ou `N`. Retorna **201** com `{ mensagem, token }`. O `token` identifica o cadastro e vai para `/confirmar?c=<token>`. Erros: **422** (validação) e **409** (CPF ou e-mail já cadastrado), com a mensagem em texto puro no corpo |
 
+| | `validarToken(tokenA, tokenB, opcoes)`: `POST /usuarios/validar-token`. Faz a pré-validação do token de confirmação. O `tokenA` é o `c` da URL. O `tokenB` é o `token` do link do e-mail, ou o md5 do código digitado. Retorna `{ mensagem, token }` |
+| | `redefinirSenha(tokenA, tokenB, password, opcoes)`: `POST /usuarios/redefinir-senha`. Grava a nova senha usando o mesmo `tokenA` e `tokenB` aceitos na validação. A senha vai em texto, e o backend gera o hash. Retorna `{ mensagem }` |
+
 ## Tratando um status específico na página
 
 Quando a página quer tratar um erro do seu jeito (ex.: abrir um dialog no 409), ela passa `silenciar` para o FetchHelper não mostrar o toast daquele status. Os outros erros continuam com toast normalmente:

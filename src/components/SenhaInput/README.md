@@ -32,3 +32,5 @@ Não há props próprias.
 - Use dentro de um `.field`, como no exemplo, para herdar o visual padrão dos campos, incluindo erro e `:user-invalid`.
 - Use `autoComplete="new-password"` ao criar ou trocar a senha, e `"current-password"` no login. Assim, o gerenciador de senhas do navegador sugere ou preenche corretamente.
 - O botão é `type="button"`, então não envia o form.
+- O botão nativo de revelar senha do Edge (`::-ms-reveal`) fica escondido, para não aparecerem dois olhos no campo.
+- **`ref` funciona:** no React 19, `ref` é uma prop comum e é repassada para o `<input>`. Serve, por exemplo, para chamar `setCustomValidity`.
