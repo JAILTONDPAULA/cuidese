@@ -51,6 +51,26 @@ class UsuarioApi {
 	}
 
 	/**
+	 * Pede o e-mail de redefinição de senha. POST /usuarios/solicitar-redefinicao-senha → 200 com
+	 * { mensagem, email }, sendo email o destino mascarado (ex.: "ja***@hotmail.com").
+	 * Envia só um dos dois (a API recusa os dois juntos). Não traz token: o caminho segue pelo link do e-mail.
+	 * Erros em texto puro: 422 (validação) e 429 (muitas tentativas).
+	 *
+	 * @param {{ email: string } | { cpf: string }} identificacao CPF com ou sem máscara (vai só com os dígitos)
+	 * @param {object} [opcoes] Opções extras do FetchHelper
+	 */
+	static solicitarRedefinicaoSenha({ email, cpf }, opcoes) {
+		const dados = email ? { email: email.trim() } : { cpf: String(cpf ?? '').replace(/\D/g, '') }
+
+		return FetchHelper.call('/usuarios/solicitar-redefinicao-senha', {
+			metodo: 'POST',
+			dados,
+			preload: 'Enviando o e-mail',
+			...opcoes,
+		})
+	}
+
+	/**
 	 * Define a nova senha depois do token validado. POST /usuarios/redefinir-senha → 200 com { mensagem }.
 	 * Erros em texto puro: 422 (validação), token inválido e 410 (expirado).
 	 *

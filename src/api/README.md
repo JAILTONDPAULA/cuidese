@@ -59,9 +59,14 @@ useEffect(() => {
 | Classe | Métodos |
 |---|---|
 | `UsuarioApi` | `cadastrar({ nome, cpf, email, telefone, data_nascimento, sexo }, opcoes)`: `POST /usuarios`. Envia CPF e telefone só com os dígitos. O `sexo` é `F`, `M`, `O` ou `N`. Retorna **201** com `{ mensagem, token }`. O `token` identifica o cadastro e vai para `/confirmar?c=<token>`. Erros: **422** (validação) e **409** (CPF ou e-mail já cadastrado), com a mensagem em texto puro no corpo |
-
 | | `validarToken(tokenA, tokenB, opcoes)`: `POST /usuarios/validar-token`. Faz a pré-validação do token de confirmação. O `tokenA` é o `c` da URL. O `tokenB` é o `token` do link do e-mail, ou o md5 do código digitado. Retorna `{ mensagem, token }` |
+| | `solicitarRedefinicaoSenha({ email } \| { cpf }, opcoes)`: `POST /usuarios/solicitar-redefinicao-senha`. Envia **só um**, e-mail **ou** CPF (o CPF vai só com os dígitos); a API recusa os dois juntos. Retorna `{ mensagem, email }`, em que `email` é o destino **mascarado** (ex.: `ja***@hotmail.com`), e **sem token**: o caminho segue pelo link do e-mail |
 | | `redefinirSenha(tokenA, tokenB, password, opcoes)`: `POST /usuarios/redefinir-senha`. Grava a nova senha usando o mesmo `tokenA` e `tokenB` aceitos na validação. A senha vai em texto, e o backend gera o hash. Retorna `{ mensagem }` |
+| `AutenticacaoApi` | `login(email, password, opcoes)`: `POST /login`. Envia também `dispositivo` (`web`, `android` ou `ios`), que dá nome ao token na API. Retorna `{ token, usuario }`. Erros: **401** (e-mail ou senha inválidos), **403** (e-mail não confirmado), **422** e **429** |
+| | `logout(opcoes)`: `POST /logout`. Revoga o token atual na API (sai só deste aparelho). Exige estar logado |
+| | `eu(opcoes)`: `GET /usuarios/eu`. Dados do usuário logado. Exige estar logado |
+
+O token da sessão é enviado **pelo FetchHelper** em toda requisição para a API (`Authorization: Bearer`). As classes de API não precisam fazer nada para isso. Veja `src/stores/README.md`.
 
 ## Tratando um status específico na página
 

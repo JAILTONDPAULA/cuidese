@@ -77,6 +77,12 @@ UsuarioApi.validarCPF(cpf).catch((erro) => {
 })
 ```
 
+## Autenticação
+
+- **Token:** se houver sessão (`src/stores/sessaoStore.js`), o helper envia `Authorization: Bearer <token>` em toda requisição para a **nossa API** (URL relativa à `VITE_API_URL`). Para URLs absolutas (`http...`), o token **não** é enviado, para não vazar para serviços externos.
+- **401 com token:** a sessão expirou ou foi revogada. O helper mostra o toast com a mensagem da API e faz `sessao.sair()`. As telas dentro da `RotaProtegida` levam ao login sozinhas. Se o token recusado não for mais o atual (ex.: a pessoa já entrou de novo), a sessão é mantida.
+- Um 401 **sem** token (ex.: senha errada no `/login`) só mostra o toast.
+
 ## Preload
 
 Com `preload: true` (padrão), o helper soma 1 no contador do preload ao começar e subtrai 1 no `finally`. O preload só some quando o contador chega a zero. Por isso:

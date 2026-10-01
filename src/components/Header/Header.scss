@@ -33,4 +33,16 @@
 			}
 		}
 	}
+
+	// Botão com cara de link, alinhado aos itens da navegação
+	&__sair {
+		padding: 0;
+		border: none;
+		background: none;
+		color: var(--text-muted-color);
+
+		&:hover {
+			color: var(--red-600);
+		}
+	}
 }

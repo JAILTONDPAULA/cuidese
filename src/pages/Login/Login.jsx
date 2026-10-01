@@ -1,18 +1,40 @@
-import { Link } from 'react-router-dom'
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
+import AutenticacaoApi from '@/api/AutenticacaoApi'
 import GoogleIcon from '@/components/icons/GoogleIcon'
 import Logo from '@/components/Logo/Logo'
 import { useOcultarPreload } from '@/components/Preload/preloadStore'
+import SenhaInput from '@/components/SenhaInput/SenhaInput'
+import { sessao, useSessaoStore } from '@/stores/sessaoStore'
 import './Login.scss'
 
 function Login() {
 	useOcultarPreload()
+	const navigate = useNavigate()
+	const location = useLocation()
+	const logado = useSessaoStore((s) => s.carregada && Boolean(s.token))
 
-	// Provedor de autenticação ainda não definido (ver CLAUDE.md > Pontos em aberto)
+	// Volta para a tela que pediu login (guardada pela RotaProtegida), ou para o início
+	const destino = location.state?.destino ?? '/'
+
+	// Só é chamado com os campos válidos (o navegador bloqueia o envio antes).
+	// Erros (e-mail ou senha inválidos, e-mail não confirmado...) já vêm em toast pelo FetchHelper.
 	function handleSubmit(event) {
 		event.preventDefault()
+		const { email, password } = Object.fromEntries(new FormData(event.currentTarget))
+
+		AutenticacaoApi.login(email, password)
+			.then(({ token, usuario }) => {
+				sessao.entrar(token, usuario)
+				navigate(destino, { replace: true })
+			})
+			.catch(() => {})
 	}
 
+	// Login com Google ainda não implementado
 	function handleGoogleLogin() {}
+
+	// Já logado: não faz sentido ver o login
+	if (logado) return <Navigate to={destino} replace />
 
 	return (
 		<div className="auth">
@@ -27,13 +49,20 @@ function Login() {
 				<section className="auth__campos">
 					<label className="field">
 						<span className="field__label">E-mail</span>
-						<input type="email" name="email" autoComplete="email" placeholder="seu@email.com" required />
+						<input
+							type="email"
+							name="email"
+							autoComplete="email"
+							placeholder="seu@email.com"
+							pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
+							required
+						/>
 						<small className="field__erro">Informe um e-mail válido</small>
 					</label>
 
 					<label className="field">
 						<span className="field__label">Senha</span>
-						<input type="password" name="senha" autoComplete="current-password" placeholder="Sua senha" required />
+						<SenhaInput name="password" autoComplete="current-password" placeholder="Sua senha" required />
 						<small className="field__erro">Informe sua senha</small>
 					</label>
 

@@ -1,5 +1,6 @@
 import { preload } from '@/components/Preload/preloadStore'
 import { toast } from '@/components/Toast/toast'
+import { sessao } from '@/stores/sessaoStore'
 
 const API_URL = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '')
 
@@ -17,8 +18,8 @@ export class ApiErro extends Error {
 	}
 }
 
-// Todas as requisições do app passam por aqui: monta a chamada, controla o preload,
-// valida o formato do retorno e avisa erros por toast.
+// Todas as requisições do app passam por aqui: monta a chamada (com o token da sessão),
+// controla o preload, valida o formato do retorno e avisa erros por toast.
 class FetchHelper {
 	/**
 	 * @param {string} url Caminho relativo à VITE_API_URL (ex.: '/usuarios') ou URL absoluta
@@ -39,7 +40,7 @@ class FetchHelper {
 	) {
 		if (!RETORNOS.includes(retorno)) throw new Error(`FetchHelper: retorno "${retorno}" inválido. Use: ${RETORNOS.join(', ')}`)
 
-		const { endereco, init } = FetchHelper.#montar(url, { metodo, dados, headers, signal })
+		const { endereco, init, token } = FetchHelper.#montar(url, { metodo, dados, headers, signal })
 
 		// O ticket garante que o ocultar() só afete a página em que a requisição começou
 		const ticket = comPreload ? preload.mostrar(typeof comPreload === 'string' ? comPreload : undefined) : null
@@ -58,6 +59,11 @@ class FetchHelper {
 			// ou quando a página avisou que trata aquele status
 			const silenciado = erro instanceof ApiErro && silenciar.includes(erro.status)
 			if (erro.name !== 'AbortError' && !silenciado) FetchHelper.#avisar(erro)
+
+			// 401 com token: a sessão expirou ou foi revogada. Apaga a sessão do aparelho, e as rotas
+			// protegidas levam ao login. Só se o token recusado ainda for o atual (não derruba um login novo).
+			if (erro instanceof ApiErro && erro.status === 401 && token && token === sessao.token()) sessao.sair()
+
 			throw erro
 		} finally {
 			if (ticket) preload.ocultar(ticket)
@@ -66,9 +72,14 @@ class FetchHelper {
 
 	static #montar(url, { metodo, dados, headers, signal }) {
 		const method = metodo.toUpperCase()
-		let endereco = /^https?:\/\//.test(url) ? url : API_URL + url
+		const daApi = !/^https?:\/\//.test(url)
+		let endereco = daApi ? API_URL + url : url
 		const padrao = {}
 		let body
+
+		// O token vai só para a nossa API (URL relativa), nunca para URLs externas
+		const token = daApi ? sessao.token() : null
+		if (token) padrao.Authorization = `Bearer ${token}`
 
 		if (dados != null) {
 			if (method === 'GET' || method === 'HEAD') {
@@ -81,7 +92,7 @@ class FetchHelper {
 			}
 		}
 
-		return { endereco, init: { method, body, signal, headers: { ...padrao, ...headers } } }
+		return { endereco, token, init: { method, body, signal, headers: { ...padrao, ...headers } } }
 	}
 
 	static async #ler(resposta, retorno) {

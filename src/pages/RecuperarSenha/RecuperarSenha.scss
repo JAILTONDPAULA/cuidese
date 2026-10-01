@@ -1,0 +1,60 @@
+// Estrutura do card vem de styles/_auth.scss; aqui só o que é exclusivo desta tela.
+.recuperar-senha {
+	// Seletor "E-mail | CPF": duas opções lado a lado, a escolhida em destaque
+	&__opcoes {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: var(--space-xs);
+		padding: var(--space-xs);
+		border-radius: var(--border-radius);
+		background: var(--surface-100);
+	}
+
+	&__opcao {
+		position: relative;
+		padding: var(--space-sm);
+		border-radius: var(--border-radius);
+		text-align: center;
+		font-weight: 600;
+		color: var(--text-muted-color);
+		cursor: pointer;
+		transition:
+			background 0.15s,
+			color 0.15s;
+
+		// O radio continua acessível (teclado e leitor de tela), mas invisível
+		input {
+			position: absolute;
+			inset: 0;
+			opacity: 0;
+			cursor: pointer;
+		}
+
+		&:hover {
+			color: var(--text-color);
+		}
+
+		&:has(input:checked) {
+			background: var(--surface-0);
+			color: var(--primary-color);
+			box-shadow: var(--shadow-sm);
+		}
+
+		&:has(input:focus-visible) {
+			outline: 2px solid var(--primary-color);
+			outline-offset: 2px;
+		}
+	}
+
+	// Conteúdo do dialog depois do envio: mensagem + e-mail de destino
+	&__enviado {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-sm);
+	}
+
+	&__email {
+		color: var(--primary-700);
+		overflow-wrap: anywhere;
+	}
+}
