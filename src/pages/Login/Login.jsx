@@ -1,6 +1,7 @@
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import AutenticacaoApi from '@/api/AutenticacaoApi'
-import GoogleIcon from '@/components/icons/GoogleIcon'
+import GoogleLogin from '@/components/GoogleLogin/GoogleLogin'
+import { GOOGLE_LOGIN_DISPONIVEL } from '@/components/GoogleLogin/googleConfig'
 import Logo from '@/components/Logo/Logo'
 import { useOcultarPreload } from '@/components/Preload/preloadStore'
 import SenhaInput from '@/components/SenhaInput/SenhaInput'
@@ -22,16 +23,18 @@ function Login() {
 		event.preventDefault()
 		const { email, password } = Object.fromEntries(new FormData(event.currentTarget))
 
-		AutenticacaoApi.login(email, password)
-			.then(({ token, usuario }) => {
-				sessao.entrar(token, usuario)
-				navigate(destino, { replace: true })
-			})
-			.catch(() => {})
+		AutenticacaoApi.login(email, password).then(entrar).catch(() => {})
 	}
 
-	// Login com Google ainda não implementado
-	function handleGoogleLogin() {}
+	// O botão do Google devolve o ID token; a API valida e devolve a sessão, como no login por e-mail
+	function handleGoogleCredencial(idToken) {
+		AutenticacaoApi.loginGoogle(idToken).then(entrar).catch(() => {})
+	}
+
+	function entrar({ token, usuario }) {
+		sessao.entrar(token, usuario)
+		navigate(destino, { replace: true })
+	}
 
 	// Já logado: não faz sentido ver o login
 	if (logado) return <Navigate to={destino} replace />
@@ -71,14 +74,13 @@ function Login() {
 					</button>
 				</section>
 
-				<section className="login__google">
-					<p className="login__divisor">ou acesse com sua conta Google</p>
-
-					<button type="button" className="btn btn--contorno" onClick={handleGoogleLogin}>
-						<GoogleIcon />
-						Entrar com Google
-					</button>
-				</section>
+				{/* Só aparece com o VITE_GOOGLE_CLIENT_ID configurado e na web (ver GoogleLogin/README.md) */}
+				{GOOGLE_LOGIN_DISPONIVEL && (
+					<section className="login__google">
+						<p className="login__divisor">ou acesse com sua conta Google</p>
+						<GoogleLogin onCredencial={handleGoogleCredencial} />
+					</section>
+				)}
 
 				<section className="auth__links">
 					<Link to="/recuperar-senha">Esqueci minha senha</Link>

@@ -63,6 +63,7 @@ useEffect(() => {
 | | `solicitarRedefinicaoSenha({ email } \| { cpf }, opcoes)`: `POST /usuarios/solicitar-redefinicao-senha`. Envia **só um**, e-mail **ou** CPF (o CPF vai só com os dígitos); a API recusa os dois juntos. Retorna `{ mensagem, email }`, em que `email` é o destino **mascarado** (ex.: `ja***@hotmail.com`), e **sem token**: o caminho segue pelo link do e-mail |
 | | `redefinirSenha(tokenA, tokenB, password, opcoes)`: `POST /usuarios/redefinir-senha`. Grava a nova senha usando o mesmo `tokenA` e `tokenB` aceitos na validação. A senha vai em texto, e o backend gera o hash. Retorna `{ mensagem }` |
 | `AutenticacaoApi` | `login(email, password, opcoes)`: `POST /login`. Envia também `dispositivo` (`web`, `android` ou `ios`), que dá nome ao token na API. Retorna `{ token, usuario }`. Erros: **401** (e-mail ou senha inválidos), **403** (e-mail não confirmado), **422** e **429** |
+| | `loginGoogle(idToken, opcoes)`: `POST /login/google` com `{ id_token, dispositivo }`. A API valida o ID token com o Google e devolve `{ token, usuario }`, igual ao login. O **endpoint ainda não existe no Laravel** |
 | | `logout(opcoes)`: `POST /logout`. Revoga o token atual na API (sai só deste aparelho). Exige estar logado |
 | | `eu(opcoes)`: `GET /usuarios/eu`. Dados do usuário logado. Exige estar logado |
 

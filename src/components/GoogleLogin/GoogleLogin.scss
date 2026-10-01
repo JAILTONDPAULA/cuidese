@@ -1,0 +1,19 @@
+.google-login {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--space-xs);
+
+	// O Google desenha o botão dentro deste container (iframe); a altura evita "pulo" enquanto carrega
+	&__botao {
+		width: 100%;
+		min-height: 44px;
+		display: flex;
+		justify-content: center;
+	}
+
+	&__erro {
+		font-size: var(--font-size-sm);
+		color: var(--red-600);
+	}
+}

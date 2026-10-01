@@ -23,6 +23,23 @@ class AutenticacaoApi {
 	}
 
 	/**
+	 * POST /login/google → 200 com { token, usuario } (mesmo formato do login por e-mail).
+	 * A API valida o ID token com o Google, encontra ou cria o usuário e devolve a sessão.
+	 * Endpoint ainda não existe no Laravel (etapa 2 do login com Google).
+	 *
+	 * @param {string} idToken O "credential" devolvido pelo botão do Google (JWT)
+	 * @param {object} [opcoes] Opções extras do FetchHelper
+	 */
+	static loginGoogle(idToken, opcoes) {
+		return FetchHelper.call('/login/google', {
+			metodo: 'POST',
+			dados: { id_token: idToken, dispositivo: Capacitor.getPlatform() },
+			preload: 'Entrando com o Google',
+			...opcoes,
+		})
+	}
+
+	/**
 	 * POST /logout → revoga o token atual na API (sai só deste aparelho). Exige estar logado.
 	 *
 	 * @param {object} [opcoes] Opções extras do FetchHelper
